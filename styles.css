@@ -210,3 +210,118 @@ main {
     padding: 0.65rem 0.75rem;
   }
 }
+
+.section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.section-heading h2 {
+  margin-top: 0;
+}
+
+.compact-field {
+  min-width: 140px;
+}
+
+.results-status {
+  display: inline-block;
+  margin: 0 0 1rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  background-color: #e6f4ea;
+  color: #176b35;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+
+.results-table th,
+.results-table td {
+  padding: 0.8rem;
+  border-bottom: 1px solid #dddddd;
+  text-align: left;
+  vertical-align: top;
+}
+
+.results-table th {
+  background-color: #f4f4f4;
+}
+
+.results-table tbody tr:hover {
+  background-color: #fafafa;
+}
+
+.pick-value {
+  display: block;
+  font-weight: bold;
+}
+
+.result-correct,
+.result-incorrect,
+.result-neutral {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.result-correct {
+  color: #176b35;
+}
+
+.result-incorrect {
+  color: #a80000;
+}
+
+.result-neutral {
+  color: #666666;
+}
+
+.score-teams {
+  color: #666666;
+  font-size: 0.75rem;
+}
+
+.b1g-details summary {
+  color: #d00000;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.b1g-detail-list {
+  min-width: 280px;
+  margin: 0.75rem 0 0;
+  padding-left: 1.25rem;
+  white-space: normal;
+}
+
+.b1g-detail-list li {
+  margin-bottom: 0.6rem;
+}
+
+.total-points {
+  color: #d00000;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  .section-heading {
+    flex-direction: column;
+  }
+
+  .compact-field {
+    width: 100%;
+  }
+}

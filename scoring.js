@@ -226,11 +226,12 @@ function calculateWeeklyResults(
     function(submission) {
       const pickMap = createPickMap(submission.picks);
 
+      let nebraskaPick = null;
       let nebraskaResult =
         createEmptyNebraskaResult();
 
       if (completedWeek.nebraskaGame) {
-        const nebraskaPick = pickMap.get(
+        nebraskaPick = pickMap.get(
           completedWeek.nebraskaGame.gameId
         );
 
@@ -254,6 +255,7 @@ function calculateWeeklyResults(
       return {
         playerId: submission.playerId,
         playerName: submission.playerName,
+        nebraskaPick,
         nebraskaResult,
         b1gResult
       };
@@ -305,6 +307,20 @@ function calculateWeeklyResults(
     return {
       playerId: result.playerId,
       playerName: result.playerName,
+      winnerPick:
+        result.nebraskaPick?.winnerPick ?? null,
+
+    atsPick:
+        result.nebraskaPick?.atsPick ?? null,
+
+    ouPick:
+        result.nebraskaPick?.ouPick ?? null,
+
+    predictedAwayScore:
+        result.nebraskaPick?.predictedAwayScore ?? null,
+
+    predictedHomeScore:
+        result.nebraskaPick?.predictedHomeScore ?? null,
 
       ...nebraskaResult,
 

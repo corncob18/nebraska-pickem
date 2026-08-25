@@ -144,10 +144,50 @@
 </section>
     </section>
 
-    <section id="results" class="page-section" hidden>
-        <h2>Weekly Results</h2>
-        <p>Player results will appear here.</p>
-    </section>
+<section id="results" class="page-section" hidden>
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Sample Data</p>
+      <h2>Weekly Results</h2>
+    </div>
+
+    <div class="form-field compact-field">
+      <label for="results-week-select">Week</label>
+
+      <select id="results-week-select">
+        <option value="W04">Week 4</option>
+      </select>
+    </div>
+  </div>
+
+  <p id="results-status" class="results-status">
+    Final Results
+  </p>
+
+  <div class="table-wrapper">
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>ATS</th>
+          <th>O/U</th>
+          <th>Winner</th>
+          <th>Predicted Score</th>
+          <th>B1G</th>
+          <th>Bonus</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+
+      <tbody id="results-table-body"></tbody>
+    </table>
+  </div>
+
+  <p class="helper-text">
+    Select a B1G record to view that player’s individual
+    conference picks.
+  </p>
+</section>
 
     <section id="leaderboard" class="page-section" hidden>
         <h2>Season Leaderboard</h2>

@@ -474,6 +474,185 @@ const sampleWeeklyResults = calculateWeeklyResults(
   samplePlayerSubmissions
 );
 
+function formatSelectionResult(
+  selection,
+  correct,
+  points
+) {
+  const resultClass = correct
+    ? "result-correct"
+    : "result-incorrect";
+
+  const symbol = correct ? "✓" : "✕";
+
+  return `
+    <span class="pick-value">${selection}</span>
+    <span class="${resultClass}">
+      ${symbol} ${points} point${points === 1 ? "" : "s"}
+    </span>
+  `;
+}
+
+function getNebraskaOpponent(game) {
+  return game.awayTeam === "Nebraska"
+    ? game.homeTeam
+    : game.awayTeam;
+}
+
+function formatAtsSelection(result, game) {
+  if (result.atsPick === "NEBRASKA") {
+    return "Nebraska";
+  }
+
+  return getNebraskaOpponent(game);
+}
+
+function formatOuSelection(result) {
+  if (result.ouPick === "OVER") {
+    return "Over";
+  }
+
+  return "Under";
+}
+
+function formatScoreResult(result, game) {
+  let resultText = "No score points";
+  let resultClass = "result-neutral";
+
+  if (result.scoreResult === "EXACT") {
+    resultText = "Exact — 5 points";
+    resultClass = "result-correct";
+  } else if (result.scoreResult === "CLOSEST") {
+    resultText = "Closest — 1 point";
+    resultClass = "result-correct";
+  }
+
+  return `
+    <span class="pick-value">
+      ${result.predictedAwayScore}–${result.predictedHomeScore}
+    </span>
+
+    <span class="score-teams">
+      ${game.awayTeam}–${game.homeTeam}
+    </span>
+
+    <span class="${resultClass}">
+      ${resultText}
+    </span>
+  `;
+}
+
+function formatB1gDetails(result) {
+  const detailItems = result.b1gDetails.map(
+    function(detail) {
+      const resultClass = detail.correct
+        ? "result-correct"
+        : "result-incorrect";
+
+      const symbol = detail.correct ? "✓" : "✕";
+
+      return `
+        <li>
+          <strong>
+            ${detail.awayTeam} at ${detail.homeTeam}
+          </strong>
+
+          <div>Pick: ${detail.winnerPick}</div>
+
+          <div class="${resultClass}">
+            ${symbol} Actual winner: ${detail.actualWinner}
+          </div>
+        </li>
+      `;
+    }
+  );
+
+  return `
+    <details class="b1g-details">
+      <summary>
+        ${result.b1gCorrect}/${result.b1gEligible}
+      </summary>
+
+      <ul class="b1g-detail-list">
+        ${detailItems.join("")}
+      </ul>
+    </details>
+  `;
+}
+
+function renderWeeklyResults(week, results) {
+  const tableBody = document.querySelector(
+    "#results-table-body"
+  );
+
+  const rows = results.map(function(result) {
+    const atsSelection = formatAtsSelection(
+      result,
+      week.nebraskaGame
+    );
+
+    const ouSelection = formatOuSelection(result);
+
+    return `
+      <tr>
+        <td>
+          <strong>${result.playerName}</strong>
+        </td>
+
+        <td>
+          ${formatSelectionResult(
+            atsSelection,
+            result.atsCorrect,
+            result.atsPoints
+          )}
+        </td>
+
+        <td>
+          ${formatSelectionResult(
+            ouSelection,
+            result.ouCorrect,
+            result.ouPoints
+          )}
+        </td>
+
+        <td>
+          ${formatSelectionResult(
+            result.winnerPick,
+            result.winnerCorrect,
+            result.winnerPoints
+          )}
+        </td>
+
+        <td>
+          ${formatScoreResult(
+            result,
+            week.nebraskaGame
+          )}
+        </td>
+
+        <td>
+          ${formatB1gDetails(result)}
+        </td>
+
+        <td>
+          ${result.b1gBonusPoints}
+        </td>
+
+        <td class="total-points">
+          ${result.weeklyPoints}
+        </td>
+      </tr>
+    `;
+  });
+
+  tableBody.innerHTML = rows.join("");
+}
+
+renderWeeklyResults(
+  sampleCompletedWeek,
+  sampleWeeklyResults
+);
+
 console.table(
   sampleWeeklyResults.map(function(result) {
     return {
