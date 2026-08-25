@@ -59,3 +59,154 @@ main {
 [hidden] {
     display: none;
 }
+
+.picks-heading {
+  margin-bottom: 1.5rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.25rem;
+  color: #d00000;
+  font-size: 0.85rem;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.deadline-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid #d00000;
+  background-color: #f7f7f7;
+}
+
+.deadline-box span {
+  font-weight: bold;
+}
+
+.form-section {
+  margin-top: 2rem;
+}
+
+.form-section h3 {
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #d00000;
+}
+
+.form-grid,
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-field label {
+  font-weight: bold;
+}
+
+.form-field input,
+.form-field select {
+  padding: 0.75rem;
+  border: 1px solid #aaaaaa;
+  border-radius: 5px;
+  font: inherit;
+}
+
+.helper-text,
+.sample-notice {
+  color: #666666;
+  font-size: 0.9rem;
+}
+
+.game-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.game-card {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+}
+
+.game-card legend {
+  padding: 0 0.5rem;
+  font-weight: bold;
+}
+
+.nebraska-game {
+  border-color: #d00000;
+}
+
+.pick-category + .pick-category {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #dddddd;
+}
+
+.pick-category h4 {
+  margin: 0 0 0.75rem;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.5rem 0;
+  padding: 0.65rem;
+  border: 1px solid #dddddd;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.radio-option:hover {
+  background-color: #f7f7f7;
+}
+
+.primary-button {
+  width: 100%;
+  margin-top: 2rem;
+  padding: 0.9rem 1rem;
+  border: 0;
+  border-radius: 6px;
+  background-color: #d00000;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.primary-button:hover {
+  background-color: #a80000;
+}
+
+.form-message {
+  min-height: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .form-grid,
+  .score-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .site-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .nav-button {
+    padding: 0.65rem 0.75rem;
+  }
+}

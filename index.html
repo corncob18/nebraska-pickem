@@ -48,9 +48,282 @@
 </header>
 
 <main>
-    <section id="picks" class="page-section">
-        <h2>Weekly Picks</h2>
-        <p>The weekly picks form will appear here.</p>
+<section id="picks" class="page-section">
+  <div class="picks-heading">
+    <p class="eyebrow">Week 4 — Sample Data</p>
+    <h2>Weekly Picks</h2>
+
+    <div class="deadline-box">
+      <span>Picks lock:</span>
+
+      <time datetime="2026-09-25T19:00:00-05:00">
+        Friday, September 25 at 7:00 PM CT
+      </time>
+    </div>
+  </div>
+
+  <form id="picks-form">
+    <section
+      class="form-section"
+      aria-labelledby="player-heading"
+    >
+      <h3 id="player-heading">Player Identification</h3>
+
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="player-select">Player</label>
+
+          <select
+            id="player-select"
+            name="playerId"
+            required
+          >
+            <option value="">Select your name</option>
+            <option value="P001">Jake Bowen</option>
+            <option value="P002">Example Player</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="player-pin">4-digit PIN</label>
+
+          <input
+            id="player-pin"
+            name="playerPin"
+            type="password"
+            inputmode="numeric"
+            pattern="[0-9]{4}"
+            minlength="4"
+            maxlength="4"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+      </div>
+
+      <p class="helper-text">
+        Player verification is not connected yet. These options
+        are temporary sample data.
+      </p>
+    </section>
+
+    <section
+      class="form-section"
+      aria-labelledby="nebraska-heading"
+    >
+      <h3 id="nebraska-heading">Nebraska Game</h3>
+
+      <p class="sample-notice">
+        The spread and O/U below are sample values used for layout
+        testing.
+      </p>
+
+      <fieldset class="game-card nebraska-game">
+        <legend>Nebraska at Michigan State</legend>
+
+        <div class="pick-category">
+          <h4>Against the Spread</h4>
+
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="ats-pick"
+              value="NEBRASKA"
+              required
+            >
+            <span>Nebraska +3.5</span>
+          </label>
+
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="ats-pick"
+              value="OPPONENT"
+              required
+            >
+            <span>Michigan State -3.5</span>
+          </label>
+        </div>
+
+        <div class="pick-category">
+          <h4>Over/Under 47.5</h4>
+
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="ou-pick"
+              value="OVER"
+              required
+            >
+            <span>Over</span>
+          </label>
+
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="ou-pick"
+              value="UNDER"
+              required
+            >
+            <span>Under</span>
+          </label>
+        </div>
+
+        <div class="pick-category">
+          <h4>Who will win?</h4>
+
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="nebraska-winner"
+              value="Nebraska"
+              required
+            >
+            <span>Nebraska</span>
+          </label>
+
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="nebraska-winner"
+              value="Michigan State"
+              required
+            >
+            <span>Michigan State</span>
+          </label>
+        </div>
+
+        <div class="pick-category">
+          <h4>Predicted Final Score</h4>
+
+          <div class="score-grid">
+            <div class="form-field">
+              <label for="predicted-away-score">
+                Nebraska
+              </label>
+
+              <input
+                id="predicted-away-score"
+                name="predictedAwayScore"
+                type="number"
+                min="0"
+                max="99"
+                required
+              >
+            </div>
+
+            <div class="form-field">
+              <label for="predicted-home-score">
+                Michigan State
+              </label>
+
+              <input
+                id="predicted-home-score"
+                name="predictedHomeScore"
+                type="number"
+                min="0"
+                max="99"
+                required
+              >
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </section>
+
+    <section
+      class="form-section"
+      aria-labelledby="b1g-heading"
+    >
+      <h3 id="b1g-heading">Big Ten Picks</h3>
+      <p>Select the winner of each conference game.</p>
+
+      <div class="game-list">
+        <fieldset class="game-card">
+          <legend>Illinois at Ohio State</legend>
+
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="winner-G005"
+              value="Illinois"
+              required
+            >
+            <span>Illinois</span>
+          </label>
+
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="winner-G005"
+              value="Ohio State"
+              required
+            >
+            <span>Ohio State</span>
+          </label>
+        </fieldset>
+
+        <fieldset class="game-card">
+          <legend>Iowa at Michigan</legend>
+
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="winner-G006"
+              value="Iowa"
+              required
+            >
+            <span>Iowa</span>
+          </label>
+
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="winner-G006"
+              value="Michigan"
+              required
+            >
+            <span>Michigan</span>
+          </label>
+        </fieldset>
+
+        <fieldset class="game-card">
+          <legend>Oregon at USC</legend>
+
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="winner-G009"
+              value="Oregon"
+              required
+            >
+            <span>Oregon</span>
+          </label>
+
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="winner-G009"
+              value="USC"
+              required
+            >
+            <span>USC</span>
+          </label>
+        </fieldset>
+      </div>
+    </section>
+
+    <button class="primary-button" type="submit">
+      Submit Picks
+    </button>
+
+    <p
+      id="form-message"
+      class="form-message"
+      aria-live="polite"
+    ></p>
+  </form>
+</section>
     </section>
 
     <section id="results" class="page-section" hidden>

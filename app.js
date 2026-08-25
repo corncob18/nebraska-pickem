@@ -19,3 +19,13 @@ navButtons.forEach(function(button) {
         });
     });
 });
+
+const picksForm = document.querySelector("#picks-form");
+const formMessage = document.querySelector("#form-message");
+
+picksForm.addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  formMessage.textContent =
+    "Sample picks passed validation. Saving will be connected later.";
+});
