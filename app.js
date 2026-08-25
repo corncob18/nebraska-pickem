@@ -335,3 +335,159 @@ picksForm.addEventListener("submit", function(event) {
   formMessage.textContent =
     "Sample submission created successfully. Check the console.";
 });
+
+const sampleFinalScores = {
+  G005: {
+    awayScore: 17,
+    homeScore: 31
+  },
+  G006: {
+    awayScore: 24,
+    homeScore: 21
+  },
+  G007: {
+    awayScore: 20,
+    homeScore: 28
+  },
+  G008: {
+    awayScore: 14,
+    homeScore: 35
+  },
+  G009: {
+    awayScore: 34,
+    homeScore: 31
+  },
+  G010: {
+    awayScore: 21,
+    homeScore: 24
+  },
+  G011: {
+    awayScore: 27,
+    homeScore: 30
+  }
+};
+
+const sampleCompletedWeek = {
+  ...sampleWeek,
+
+  nebraskaGame: {
+    ...sampleWeek.nebraskaGame,
+    awayScore: 27,
+    homeScore: 24
+  },
+
+  b1gGames: sampleWeek.b1gGames.map(function(game) {
+    return {
+      ...game,
+      ...sampleFinalScores[game.gameId]
+    };
+  })
+};
+
+const correctB1gWinners = {
+  G005: "Ohio State",
+  G006: "Iowa",
+  G007: "Washington",
+  G008: "Indiana",
+  G009: "Oregon",
+  G010: "Maryland",
+  G011: "Penn State"
+};
+
+function createSampleSubmission(
+  playerId,
+  playerName,
+  nebraskaPick,
+  b1gWinners
+) {
+  const b1gPicks = Object.entries(b1gWinners).map(
+    function(entry) {
+      const gameId = entry[0];
+      const winnerPick = entry[1];
+
+      return {
+        gameId,
+        winnerPick
+      };
+    }
+  );
+
+  return {
+    playerId,
+    playerName,
+    picks: [
+      nebraskaPick,
+      ...b1gPicks
+    ]
+  };
+}
+
+const samplePlayerSubmissions = [
+  createSampleSubmission(
+    "P001",
+    "Jake Bowen",
+    {
+      gameId: "G004",
+      winnerPick: "Nebraska",
+      atsPick: "NEBRASKA",
+      ouPick: "OVER",
+      predictedAwayScore: 27,
+      predictedHomeScore: 24
+    },
+    correctB1gWinners
+  ),
+
+  createSampleSubmission(
+    "P002",
+    "Example Player",
+    {
+      gameId: "G004",
+      winnerPick: "Michigan State",
+      atsPick: "OPPONENT",
+      ouPick: "UNDER",
+      predictedAwayScore: 27,
+      predictedHomeScore: 24
+    },
+    {
+      ...correctB1gWinners,
+      G009: "USC"
+    }
+  ),
+
+  createSampleSubmission(
+    "P003",
+    "Test Player",
+    {
+      gameId: "G004",
+      winnerPick: "Nebraska",
+      atsPick: "NEBRASKA",
+      ouPick: "OVER",
+      predictedAwayScore: 28,
+      predictedHomeScore: 24
+    },
+    correctB1gWinners
+  )
+];
+
+const sampleWeeklyResults = calculateWeeklyResults(
+  sampleCompletedWeek,
+  samplePlayerSubmissions
+);
+
+console.table(
+  sampleWeeklyResults.map(function(result) {
+    return {
+      player: result.playerName,
+      atsPoints: result.atsPoints,
+      ouPoints: result.ouPoints,
+      winnerPoints: result.winnerPoints,
+      scoreDifference: result.scoreDifference,
+      scoreResult: result.scoreResult,
+      scorePoints: result.scorePoints,
+      b1gRecord:
+        `${result.b1gCorrect}/${result.b1gEligible}`,
+      b1gBonus: result.b1gBonusPoints,
+      weeklyPoints: result.weeklyPoints
+    };
+  })
+);
