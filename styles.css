@@ -26,9 +26,36 @@ main {
     padding: 0 1rem;
 }
 
-.status-card {
+.page-section {
     padding: 1.5rem;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+}
+
+.site-nav {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.4rem;
+}
+
+.nav-button {
+    padding: 0.75rem 1rem;
+    border: 2px solid white;
+    border-radius: 6px;
+    background-color: transparent;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.nav-button:hover,
+.nav-button.active {
+    background-color: white;
+    color: #d00000;
+}
+
+[hidden] {
+    display: none;
 }

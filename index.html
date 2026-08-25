@@ -16,15 +16,52 @@
 
 <body>
     <header class="site-header">
-        <h1>Nebraska Pick'em</h1>
-        <p>Nebraska & B1G Football Picks</p>
-    </header>
+    <h1>Nebraska Pick'Em</h1>
+    <p>Nebraska & B1G Football Picks</p>
 
-    <main>
-        <section class="status-card">
-            <h2>Website setup successful</h2>
-            <p>HTML, CSS, and JavaScript are connected.</p>
-        </section>
-    </main>
+    <nav class="site-nav" aria-label="Main Navigation">
+        <button
+            class="nav-button active"
+            type="button"
+            data-page="picks"
+        
+        >
+            Picks
+        </button>
+
+        <button
+            class="nav-button"
+            type="button"
+            data-page="results"
+        >
+            Results
+        </button>
+
+        <button
+            class="nav-button"
+            type="button"
+            data-page="leaderboard"
+        >
+            Leaderboard
+        </button>
+    </nav>
+</header>
+
+<main>
+    <section id="picks" class="page-section">
+        <h2>Weekly Picks</h2>
+        <p>The weekly picks form will appear here.</p>
+    </section>
+
+    <section id="results" class="page-section" hidden>
+        <h2>Weekly Results</h2>
+        <p>Player results will appear here.</p>
+    </section>
+
+    <section id="leaderboard" class="page-section" hidden>
+        <h2>Season Leaderboard</h2>
+        <p>The season standings will appear here.</p>
+    </section>
+</main>
 </body>
 </html>
