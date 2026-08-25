@@ -339,3 +339,86 @@ function calculateWeeklyResults(
     };
   });
 }
+
+function calculateLeaderboard(finalizedWeeks) {
+  const playersById = new Map();
+
+  finalizedWeeks.forEach(function(week) {
+    week.results.forEach(function(result) {
+      let player = playersById.get(result.playerId);
+
+      if (!player) {
+        player = {
+          playerId: result.playerId,
+          playerName: result.playerName,
+          totalPoints: 0,
+          b1gCorrect: 0,
+          b1gAttempted: 0,
+          perfectB1gWeeks: 0,
+          weeksPlayed: 0,
+          weeklyPoints: {}
+        };
+
+        playersById.set(result.playerId, player);
+      }
+
+      player.totalPoints += result.weeklyPoints;
+      player.b1gCorrect += result.b1gCorrect;
+      player.b1gAttempted += result.b1gAttempted;
+      player.weeksPlayed++;
+
+      player.weeklyPoints[week.weekId] =
+        result.weeklyPoints;
+
+      if (result.b1gPerfect) {
+        player.perfectB1gWeeks++;
+      }
+    });
+  });
+
+  const standings = Array.from(
+    playersById.values()
+  ).map(function(player) {
+    const b1gAccuracy =
+      player.b1gAttempted > 0
+        ? (
+            player.b1gCorrect /
+            player.b1gAttempted
+          ) * 100
+        : null;
+
+    return {
+      ...player,
+      b1gAccuracy
+    };
+  });
+
+  standings.sort(function(playerA, playerB) {
+    if (playerA.totalPoints !== playerB.totalPoints) {
+      return playerB.totalPoints - playerA.totalPoints;
+    }
+
+    return playerA.playerName.localeCompare(
+      playerB.playerName
+    );
+  });
+
+  let previousPoints = null;
+  let previousRank = 0;
+
+  return standings.map(function(player, index) {
+    let rank = index + 1;
+
+    if (player.totalPoints === previousPoints) {
+      rank = previousRank;
+    }
+
+    previousPoints = player.totalPoints;
+    previousRank = rank;
+
+    return {
+      rank,
+      ...player
+    };
+  });
+}

@@ -653,6 +653,248 @@ renderWeeklyResults(
   sampleWeeklyResults
 );
 
+function createSampleSummaryResult(
+  playerId,
+  playerName,
+  weeklyPoints,
+  b1gCorrect,
+  b1gAttempted,
+  b1gPerfect
+) {
+  return {
+    playerId,
+    playerName,
+    weeklyPoints,
+    b1gCorrect,
+    b1gAttempted,
+    b1gPerfect
+  };
+}
+
+const sampleFinalizedWeeks = [
+  {
+    weekId: "W01",
+    results: [
+      createSampleSummaryResult(
+        "P001",
+        "Jake Bowen",
+        8,
+        0,
+        0,
+        false
+      ),
+      createSampleSummaryResult(
+        "P002",
+        "Example Player",
+        6,
+        0,
+        0,
+        false
+      ),
+      createSampleSummaryResult(
+        "P003",
+        "Test Player",
+        9,
+        0,
+        0,
+        false
+      )
+    ]
+  },
+
+  {
+    weekId: "W02",
+    results: [
+      createSampleSummaryResult(
+        "P001",
+        "Jake Bowen",
+        7,
+        0,
+        0,
+        false
+      ),
+      createSampleSummaryResult(
+        "P002",
+        "Example Player",
+        10,
+        0,
+        0,
+        false
+      ),
+      createSampleSummaryResult(
+        "P003",
+        "Test Player",
+        5,
+        0,
+        0,
+        false
+      )
+    ]
+  },
+
+  {
+    weekId: "W03",
+    results: [
+      createSampleSummaryResult(
+        "P001",
+        "Jake Bowen",
+        11,
+        0,
+        0,
+        false
+      ),
+      createSampleSummaryResult(
+        "P002",
+        "Example Player",
+        6,
+        0,
+        0,
+        false
+      ),
+      createSampleSummaryResult(
+        "P003",
+        "Test Player",
+        8,
+        0,
+        0,
+        false
+      )
+    ]
+  },
+
+  {
+    weekId: "W04",
+    results: sampleWeeklyResults
+  },
+
+  {
+    weekId: "W05",
+    results: [
+      createSampleSummaryResult(
+        "P001",
+        "Jake Bowen",
+        9,
+        6,
+        7,
+        false
+      ),
+      createSampleSummaryResult(
+        "P002",
+        "Example Player",
+        13,
+        7,
+        7,
+        true
+      ),
+      createSampleSummaryResult(
+        "P003",
+        "Test Player",
+        7,
+        5,
+        7,
+        false
+      )
+    ]
+  }
+];
+
+const sampleLeaderboard = calculateLeaderboard(
+  sampleFinalizedWeeks
+);
+
+console.table(sampleLeaderboard);
+
+console.assert(
+  sampleLeaderboard[0].playerId === "P001",
+  "Jake should be first."
+);
+
+console.assert(
+  sampleLeaderboard[0].totalPoints === 51,
+  "Jake should have 51 points."
+);
+
+console.assert(
+  sampleLeaderboard[0].b1gCorrect === 13 &&
+    sampleLeaderboard[0].b1gAttempted === 14,
+  "Jake should have a 13/14 B1G record."
+);
+
+console.assert(
+  sampleLeaderboard[1].rank === 2 &&
+    sampleLeaderboard[2].rank === 2,
+  "The 40-point players should be tied for second."
+);
+
+console.assert(
+  sampleLeaderboard[1].totalPoints === 40 &&
+    sampleLeaderboard[2].totalPoints === 40,
+  "Example Player and Test Player should each have 40 points."
+);
+
+function formatB1gAccuracy(accuracy) {
+  if (accuracy === null) {
+    return "—";
+  }
+
+  return `${accuracy.toFixed(1)}%`;
+}
+
+function formatB1gRecord(player) {
+  if (player.b1gAttempted === 0) {
+    return "—";
+  }
+
+  return (
+    `${player.b1gCorrect}/` +
+    `${player.b1gAttempted}`
+  );
+}
+
+function renderLeaderboard(standings) {
+  const tableBody = document.querySelector(
+    "#leaderboard-table-body"
+  );
+
+  const rows = standings.map(function(player) {
+    return `
+      <tr>
+        <td>${player.rank}</td>
+
+        <td>
+          <strong>${player.playerName}</strong>
+        </td>
+
+        <td class="leaderboard-points">
+          ${player.totalPoints}
+        </td>
+
+        <td>
+          ${formatB1gRecord(player)}
+        </td>
+
+        <td>
+          ${formatB1gAccuracy(
+            player.b1gAccuracy
+          )}
+        </td>
+
+        <td>
+          ${player.perfectB1gWeeks}
+        </td>
+
+        <td>
+          ${player.weeksPlayed}
+        </td>
+      </tr>
+    `;
+  });
+
+  tableBody.innerHTML = rows.join("");
+}
+
+renderLeaderboard(sampleLeaderboard);
+
 console.table(
   sampleWeeklyResults.map(function(result) {
     return {

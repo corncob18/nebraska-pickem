@@ -325,3 +325,19 @@ main {
     width: 100%;
   }
 }
+
+.leaderboard-table td:first-child {
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.leaderboard-table th:first-child {
+  text-align: center;
+}
+
+.leaderboard-points {
+  color: #d00000;
+  font-size: 1.1rem;
+  font-weight: bold;
+}

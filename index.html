@@ -189,10 +189,44 @@
   </p>
 </section>
 
-    <section id="leaderboard" class="page-section" hidden>
-        <h2>Season Leaderboard</h2>
-        <p>The season standings will appear here.</p>
-    </section>
+    <section
+  id="leaderboard"
+  class="page-section"
+  hidden
+>
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">
+        Through Week 5 — Sample Data
+      </p>
+
+      <h2>Season Leaderboard</h2>
+    </div>
+  </div>
+
+  <p class="helper-text">
+    Players are ranked by total points. B1G statistics do not
+    break a points tie.
+  </p>
+
+  <div class="table-wrapper">
+    <table class="results-table leaderboard-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Player</th>
+          <th>Points</th>
+          <th>B1G Correct</th>
+          <th>B1G Accuracy</th>
+          <th>Perfect Weeks</th>
+          <th>Weeks Played</th>
+        </tr>
+      </thead>
+
+      <tbody id="leaderboard-table-body"></tbody>
+    </table>
+  </div>
+</section>
 </main>
 </body>
 </html>
