@@ -1,0 +1,34 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #222222;
+}
+
+.site-header{
+    padding: 2rem;
+    background-color: #d00000;
+    color: white;
+    text-align: center;
+}
+
+.site-header h1{
+    margin: 0;
+}
+
+.site-header p {
+    margin-bottom: 0;
+}
+
+main {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.status-card {
+    padding: 1.5rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+}
