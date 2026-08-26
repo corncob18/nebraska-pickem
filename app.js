@@ -1,3 +1,8 @@
+const PICKEM_API_URL =
+  "https://script.google.com/macros/s/AKfycbyq5eEsZceeCRq_bvhy_QIq-0uEZd0VHrxa_XQfT12fizKzDUukB8doBcfeEtiuwFs79A/exec";
+
+let currentPickWeek = null;
+
 const sampleWeek = {
   weekId: "W04",
   weekName: "Week 4 — Sample Data",
@@ -92,6 +97,28 @@ function renderNebraskaGame(game) {
   const container = document.querySelector(
     "#nebraska-game-container"
   );
+
+  const hasBettingLines =
+    Number.isFinite(game.nebraskaSpread) &&
+    Number.isFinite(game.overUnder);
+
+  if (!hasBettingLines) {
+    container.innerHTML = `
+      <fieldset class="game-card nebraska-game">
+        <legend>
+          ${game.awayTeam} at ${game.homeTeam}
+        </legend>
+
+        <p>
+          Nebraska betting lines have not been entered yet.
+          Pick selections will appear once the spread and
+          over/under are available.
+        </p>
+      </fieldset>
+    `;
+
+    return;
+  }
 
   const nebraskaIsAway = game.awayTeam === "Nebraska";
 
@@ -266,7 +293,7 @@ function renderPickForm(week) {
   renderB1gGames(week.b1gGames);
 }
 
-renderPickForm(sampleWeek);
+// renderPickForm(sampleWeek);
 
 const picksForm = document.querySelector("#picks-form");
 const formMessage = document.querySelector("#form-message");
@@ -274,55 +301,76 @@ const formMessage = document.querySelector("#form-message");
 picksForm.addEventListener("submit", function(event) {
   event.preventDefault();
 
+  if (!currentPickWeek) {
+    formMessage.textContent =
+      "The weekly games have not finished loading.";
+
+    return;
+  }
+
+  if (currentPickWeek.effectiveStatus !== "OPEN") {
+    formMessage.textContent =
+      "Picks cannot be submitted because this week is not open.";
+
+    return;
+  }
+
   const formData = new FormData(picksForm);
-  const nebraskaGame = sampleWeek.nebraskaGame;
+  const picks = [];
 
-  const nebraskaPick = {
-    gameId: nebraskaGame.gameId,
+  const nebraskaGame =
+    currentPickWeek.nebraskaGame;
 
-    winnerPick: formData.get(
-      `winner-${nebraskaGame.gameId}`
-    ),
+  if (nebraskaGame) {
+    const nebraskaPick = {
+      gameId: nebraskaGame.gameId,
 
-    atsPick: formData.get(
-      `ats-${nebraskaGame.gameId}`
-    ),
-
-    ouPick: formData.get(
-      `ou-${nebraskaGame.gameId}`
-    ),
-
-    predictedAwayScore: Number(
-      formData.get(
-        `predicted-away-${nebraskaGame.gameId}`
-      )
-    ),
-
-    predictedHomeScore: Number(
-      formData.get(
-        `predicted-home-${nebraskaGame.gameId}`
-      )
-    )
-  };
-
-  const b1gPicks = sampleWeek.b1gGames.map(function(game) {
-    return {
-      gameId: game.gameId,
       winnerPick: formData.get(
-        `winner-${game.gameId}`
+        `winner-${nebraskaGame.gameId}`
+      ),
+
+      atsPick: formData.get(
+        `ats-${nebraskaGame.gameId}`
+      ),
+
+      ouPick: formData.get(
+        `ou-${nebraskaGame.gameId}`
+      ),
+
+      predictedAwayScore: Number(
+        formData.get(
+          `predicted-away-${nebraskaGame.gameId}`
+        )
+      ),
+
+      predictedHomeScore: Number(
+        formData.get(
+          `predicted-home-${nebraskaGame.gameId}`
+        )
       )
     };
-  });
+
+    picks.push(nebraskaPick);
+  }
+
+  const b1gPicks =
+    currentPickWeek.b1gGames.map(function(game) {
+      return {
+        gameId: game.gameId,
+        winnerPick: formData.get(
+          `winner-${game.gameId}`
+        )
+      };
+    });
+
+  picks.push(...b1gPicks);
 
   const submission = {
     action: "submitPicks",
     playerId: formData.get("playerId"),
     pin: formData.get("playerPin"),
-    weekId: sampleWeek.weekId,
-    picks: [
-      nebraskaPick,
-      ...b1gPicks
-    ]
+    weekId: currentPickWeek.weekId,
+    picks: picks
   };
 
   const safeConsoleCopy = {
@@ -330,10 +378,13 @@ picksForm.addEventListener("submit", function(event) {
     pin: "[REDACTED]"
   };
 
-  console.log("Submission object:", safeConsoleCopy);
+  console.log(
+    "Submission object:",
+    safeConsoleCopy
+  );
 
   formMessage.textContent =
-    "Sample submission created successfully. Check the console.";
+    "Submission created successfully. Check the console.";
 });
 
 const sampleFinalScores = {
@@ -912,3 +963,102 @@ console.table(
     };
   })
 );
+
+function normalizePickFormData(apiData) {
+    return {
+        weekId: apiData.week.weekId,
+        weekNumber: apiData.week.weekNumber,
+        weekName: apiData.week.weekName,
+        deadline: apiData.week.deadline,
+        deadlineDisplay: apiData.week.deadlineDisplay,
+        effectiveStatus: apiData.week.effectiveStatus,
+        nebraskaGame: apiData.nebraskaGame,
+        b1gGames: apiData.b1gGames
+    };
+}
+
+function applyPickFormStatus(status) {
+    const statusElement =
+        document.querySelector("#pick-form-status");
+
+    const formControls =
+        picksForm.querySelectorAll("input, select, button");
+
+    const isOpen = status === "OPEN";
+
+    formControls.forEach(function(control) {
+        control.disabled = !isOpen;
+    });
+
+    const statusMessages = {
+        OPEN: "Picks are open.",
+        NOT_READY:
+            "This week is not open yet. The deadline or Nebraska betting lines are still being prepared.",
+        LOCKED:
+            "The deadline has passed. Picks are locked for this week.",
+        RESULTS_ENTERED:
+            "Picks are locked and results have been entered.",
+        FINALIZED:
+            "This week has been finalized.",
+        INACTIVE:
+            "This week is currently inactive."
+    };
+
+    statusElement.textContent =
+        statusMessages[status] || "This week is unavailable.";
+}
+
+async function loadPickForm(weekId) {
+    const statusElement =
+        document.querySelector("#pick-form-status");
+
+    statusElement.textContent = "Loading this week's games...";
+
+    const requestUrl = new URL(PICKEM_API_URL);
+    requestUrl.searchParams.set("action", "getPickForm");
+    requestUrl.searchParams.set("weekId", weekId);
+
+    try {
+        const response = await fetch(requestUrl.toString());
+
+        if (!response.ok) {
+            throw new Error(`HTTP error ${response.status}`);
+        }
+
+        const payload = await response.json();
+
+        if (!payload.success) {
+            throw new Error(
+                payload.error?.message ||
+                "The week could not be loaded."
+            );
+        }
+
+        currentPickWeek =
+            normalizePickFormData(payload.data);
+
+        renderPickForm(currentPickWeek);
+        applyPickFormStatus(
+            currentPickWeek.effectiveStatus
+        );
+
+        console.log(
+            "Loaded live pick-form data:",
+            currentPickWeek
+        );
+    } catch (error) {
+        console.error("Pick form loading failed:", error);
+
+        currentPickWeek = null;
+        statusElement.textContent =
+            "The weekly games could not be loaded. Please refresh the page and try again.";
+
+        picksForm
+            .querySelectorAll("input, select, button")
+            .forEach(function(control) {
+                control.disabled = true;
+            });
+    }
+}
+
+  loadPickForm("W01");
