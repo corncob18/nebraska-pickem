@@ -68,6 +68,114 @@
     Loading this week's games...
   </p>
 
+<section
+  class="form-section"
+  aria-labelledby="registration-heading"
+>
+  <button
+    id="toggle-registration-button"
+    type="button"
+    aria-expanded="false"
+    aria-controls="registration-panel"
+  >
+    Register New Player
+  </button>
+
+  <div id="registration-panel" hidden>
+    <h3 id="registration-heading">
+      New Player Registration
+    </h3>
+
+    <p class="helper-text">
+      Register once, then use your name and PIN to submit
+      picks each week.
+    </p>
+
+    <form id="registration-form">
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="registration-name">
+            Player Name
+          </label>
+
+          <input
+            id="registration-name"
+            name="playerName"
+            type="text"
+            minlength="2"
+            maxlength="40"
+            autocomplete="name"
+            required
+          >
+        </div>
+
+        <div class="form-field">
+          <label for="registration-pin">
+            4-digit PIN
+          </label>
+
+          <input
+            id="registration-pin"
+            name="pin"
+            type="password"
+            inputmode="numeric"
+            pattern="[0-9]{4}"
+            minlength="4"
+            maxlength="4"
+            autocomplete="new-password"
+            required
+          >
+        </div>
+
+        <div class="form-field">
+          <label for="registration-pin-confirm">
+            Confirm PIN
+          </label>
+
+          <input
+            id="registration-pin-confirm"
+            name="pinConfirmation"
+            type="password"
+            inputmode="numeric"
+            pattern="[0-9]{4}"
+            minlength="4"
+            maxlength="4"
+            autocomplete="new-password"
+            required
+          >
+        </div>
+
+        <div class="form-field">
+          <label for="registration-code">
+            Registration Code
+          </label>
+
+          <input
+            id="registration-code"
+            name="registrationCode"
+            type="password"
+            autocomplete="off"
+            required
+          >
+        </div>
+      </div>
+
+      <button
+        id="register-player-button"
+        type="submit"
+      >
+        Create Player
+      </button>
+
+      <p
+        id="registration-message"
+        class="form-message"
+        aria-live="polite"
+      ></p>
+    </form>
+  </div>
+</section>
+
   <form id="picks-form">
     <section
       class="form-section"
@@ -108,8 +216,7 @@
       </div>
 
       <p class="helper-text">
-        Player verification is not connected yet. These options
-        are temporary sample data.
+          Returning players: select your name and enter your PIN.
       </p>
     </section>
 

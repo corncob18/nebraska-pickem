@@ -1061,4 +1061,161 @@ async function loadPickForm(weekId) {
     }
 }
 
+const registrationToggle =
+  document.querySelector(
+    "#toggle-registration-button"
+  );
+
+const registrationPanel =
+  document.querySelector(
+    "#registration-panel"
+  );
+
+registrationToggle.addEventListener(
+  "click",
+  function() {
+    const isCurrentlyHidden =
+      registrationPanel.hidden;
+
+    registrationPanel.hidden =
+      !isCurrentlyHidden;
+
+    registrationToggle.setAttribute(
+      "aria-expanded",
+      String(isCurrentlyHidden)
+    );
+
+    registrationToggle.textContent =
+      isCurrentlyHidden
+        ? "Hide Registration"
+        : "Register New Player";
+  }
+);
+
+const registrationForm =
+  document.querySelector("#registration-form");
+
+const registrationMessage =
+  document.querySelector("#registration-message");
+
+const registerPlayerButton =
+  document.querySelector("#register-player-button");
+
+registrationForm.addEventListener(
+  "submit",
+  async function(event) {
+    event.preventDefault();
+
+    registrationMessage.textContent = "";
+
+    const formData =
+      new FormData(registrationForm);
+
+    const pin =
+      formData.get("pin");
+
+    const pinConfirmation =
+      formData.get("pinConfirmation");
+
+    if (pin !== pinConfirmation) {
+      registrationMessage.textContent =
+        "The PIN entries do not match.";
+
+      return;
+    }
+
+    const request = {
+      action: "registerPlayer",
+      playerName: formData.get("playerName"),
+      pin: pin,
+      registrationCode:
+        formData.get("registrationCode")
+    };
+
+    registerPlayerButton.disabled = true;
+    registerPlayerButton.textContent =
+      "Creating Player...";
+
+    try {
+      const response = await fetch(
+        PICKEM_API_URL,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify(request)
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `HTTP error ${response.status}`
+        );
+      }
+
+      const payload = await response.json();
+
+      if (!payload.success) {
+        throw new Error(
+          payload.error?.message ||
+          "Registration was unsuccessful."
+        );
+      }
+
+      const newPlayer = payload.data;
+
+      const playerSelect =
+        document.querySelector("#player-select");
+
+      let playerOption =
+        Array.from(playerSelect.options)
+          .find(function(option) {
+            return option.value ===
+              newPlayer.playerId;
+          });
+
+      if (!playerOption) {
+        playerOption = document.createElement(
+          "option"
+        );
+
+        playerOption.value =
+          newPlayer.playerId;
+
+        playerSelect.appendChild(playerOption);
+      }
+
+      playerOption.textContent =
+        newPlayer.playerName;
+
+      playerSelect.value =
+        newPlayer.playerId;
+
+      registrationForm.reset();
+
+      registrationMessage.textContent =
+        `Registration successful. Your Player ID is ${newPlayer.playerId}.`;
+
+      console.log(
+        "Registered player:",
+        newPlayer
+      );
+    } catch (error) {
+      console.error(
+        "Player registration failed:",
+        error
+      );
+
+      registrationMessage.textContent =
+        error.message;
+    } finally {
+      registerPlayerButton.disabled = false;
+      registerPlayerButton.textContent =
+        "Create Player";
+    }
+  }
+);
+
   loadPickForm("W01");
