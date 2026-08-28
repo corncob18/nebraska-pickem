@@ -59,18 +59,18 @@ const sampleWeek = {
 const navButtons = document.querySelectorAll(".nav-button");
 const pageSections = document.querySelectorAll(".page-section");
 
-navButtons.forEach(function(button) {
-  button.addEventListener("click", function() {
+navButtons.forEach(function (button) {
+  button.addEventListener("click", function () {
     const selectedPage = button.dataset.page;
 
-    navButtons.forEach(function(navButton) {
+    navButtons.forEach(function (navButton) {
       navButton.classList.toggle(
         "active",
         navButton === button
       );
     });
 
-    pageSections.forEach(function(section) {
+    pageSections.forEach(function (section) {
       section.hidden = section.id !== selectedPage;
     });
   });
@@ -254,7 +254,7 @@ function renderB1gGames(games) {
     "#b1g-games-container"
   );
 
-  const gameCards = games.map(function(game) {
+  const gameCards = games.map(function (game) {
     return `
       <fieldset class="game-card">
         <legend>
@@ -298,94 +298,146 @@ function renderPickForm(week) {
 const picksForm = document.querySelector("#picks-form");
 const formMessage = document.querySelector("#form-message");
 
-picksForm.addEventListener("submit", function(event) {
-  event.preventDefault();
+picksForm.addEventListener(
+  "submit",
+  async function (event) {
+    event.preventDefault();
 
-  if (!currentPickWeek) {
-    formMessage.textContent =
-      "The weekly games have not finished loading.";
+    if (!currentPickWeek) {
+      formMessage.textContent =
+        "The weekly games have not finished loading.";
 
-    return;
-  }
+      return;
+    }
 
-  if (currentPickWeek.effectiveStatus !== "OPEN") {
-    formMessage.textContent =
-      "Picks cannot be submitted because this week is not open.";
+    if (currentPickWeek.effectiveStatus !== "OPEN") {
+      formMessage.textContent =
+        "Picks cannot be submitted because this week is not open.";
 
-    return;
-  }
+      return;
+    }
 
-  const formData = new FormData(picksForm);
-  const picks = [];
+    const formData = new FormData(picksForm);
+    const picks = [];
 
-  const nebraskaGame =
-    currentPickWeek.nebraskaGame;
+    const nebraskaGame =
+      currentPickWeek.nebraskaGame;
 
-  if (nebraskaGame) {
-    const nebraskaPick = {
-      gameId: nebraskaGame.gameId,
+    if (nebraskaGame) {
+      const nebraskaPick = {
+        gameId: nebraskaGame.gameId,
 
-      winnerPick: formData.get(
-        `winner-${nebraskaGame.gameId}`
-      ),
-
-      atsPick: formData.get(
-        `ats-${nebraskaGame.gameId}`
-      ),
-
-      ouPick: formData.get(
-        `ou-${nebraskaGame.gameId}`
-      ),
-
-      predictedAwayScore: Number(
-        formData.get(
-          `predicted-away-${nebraskaGame.gameId}`
-        )
-      ),
-
-      predictedHomeScore: Number(
-        formData.get(
-          `predicted-home-${nebraskaGame.gameId}`
-        )
-      )
-    };
-
-    picks.push(nebraskaPick);
-  }
-
-  const b1gPicks =
-    currentPickWeek.b1gGames.map(function(game) {
-      return {
-        gameId: game.gameId,
         winnerPick: formData.get(
-          `winner-${game.gameId}`
+          `winner-${nebraskaGame.gameId}`
+        ),
+
+        atsPick: formData.get(
+          `ats-${nebraskaGame.gameId}`
+        ),
+
+        ouPick: formData.get(
+          `ou-${nebraskaGame.gameId}`
+        ),
+
+        predictedAwayScore: Number(
+          formData.get(
+            `predicted-away-${nebraskaGame.gameId}`
+          )
+        ),
+
+        predictedHomeScore: Number(
+          formData.get(
+            `predicted-home-${nebraskaGame.gameId}`
+          )
         )
       };
-    });
 
-  picks.push(...b1gPicks);
+      picks.push(nebraskaPick);
+    }
 
-  const submission = {
-    action: "submitPicks",
-    playerId: formData.get("playerId"),
-    pin: formData.get("playerPin"),
-    weekId: currentPickWeek.weekId,
-    picks: picks
-  };
+    const b1gPicks =
+      currentPickWeek.b1gGames.map(function (game) {
+        return {
+          gameId: game.gameId,
+          winnerPick: formData.get(
+            `winner-${game.gameId}`
+          )
+        };
+      });
 
-  const safeConsoleCopy = {
-    ...submission,
-    pin: "[REDACTED]"
-  };
+    picks.push(...b1gPicks);
 
-  console.log(
-    "Submission object:",
-    safeConsoleCopy
-  );
+    const submission = {
+      action: "submitPicks",
+      playerId: formData.get("playerId"),
+      pin: formData.get("playerPin"),
+      weekId: currentPickWeek.weekId,
+      picks: picks
+    };
 
-  formMessage.textContent =
-    "Submission created successfully. Check the console.";
-});
+    const submitButton =
+      picksForm.querySelector(
+        'button[type="submit"]'
+      );
+
+    submitButton.disabled = true;
+    submitButton.textContent =
+      "Saving Picks...";
+
+    formMessage.textContent = "";
+
+    try {
+      const response = await fetch(
+        PICKEM_API_URL,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify(submission)
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `HTTP error ${response.status}`
+        );
+      }
+
+      const payload = await response.json();
+
+      if (!payload.success) {
+        throw new Error(
+          payload.error?.message ||
+          "The picks could not be saved."
+        );
+      }
+
+      console.log(
+        "Saved pick submission:",
+        payload.data
+      );
+
+      formMessage.textContent =
+        `${payload.data.pickCount} picks saved successfully.`;
+    } catch (error) {
+      console.error(
+        "Pick submission failed:",
+        error
+      );
+
+      formMessage.textContent =
+        error.message;
+    } finally {
+      submitButton.textContent =
+        "Submit Picks";
+
+      submitButton.disabled =
+        !currentPickWeek ||
+        currentPickWeek.effectiveStatus !== "OPEN";
+    }
+  });
 
 const sampleFinalScores = {
   G005: {
@@ -427,7 +479,7 @@ const sampleCompletedWeek = {
     homeScore: 24
   },
 
-  b1gGames: sampleWeek.b1gGames.map(function(game) {
+  b1gGames: sampleWeek.b1gGames.map(function (game) {
     return {
       ...game,
       ...sampleFinalScores[game.gameId]
@@ -452,7 +504,7 @@ function createSampleSubmission(
   b1gWinners
 ) {
   const b1gPicks = Object.entries(b1gWinners).map(
-    function(entry) {
+    function (entry) {
       const gameId = entry[0];
       const winnerPick = entry[1];
 
@@ -595,7 +647,7 @@ function formatScoreResult(result, game) {
 
 function formatB1gDetails(result) {
   const detailItems = result.b1gDetails.map(
-    function(detail) {
+    function (detail) {
       const resultClass = detail.correct
         ? "result-correct"
         : "result-incorrect";
@@ -636,7 +688,7 @@ function renderWeeklyResults(week, results) {
     "#results-table-body"
   );
 
-  const rows = results.map(function(result) {
+  const rows = results.map(function (result) {
     const atsSelection = formatAtsSelection(
       result,
       week.nebraskaGame
@@ -652,33 +704,33 @@ function renderWeeklyResults(week, results) {
 
         <td>
           ${formatSelectionResult(
-            atsSelection,
-            result.atsCorrect,
-            result.atsPoints
-          )}
+      atsSelection,
+      result.atsCorrect,
+      result.atsPoints
+    )}
         </td>
 
         <td>
           ${formatSelectionResult(
-            ouSelection,
-            result.ouCorrect,
-            result.ouPoints
-          )}
+      ouSelection,
+      result.ouCorrect,
+      result.ouPoints
+    )}
         </td>
 
         <td>
           ${formatSelectionResult(
-            result.winnerPick,
-            result.winnerCorrect,
-            result.winnerPoints
-          )}
+      result.winnerPick,
+      result.winnerCorrect,
+      result.winnerPoints
+    )}
         </td>
 
         <td>
           ${formatScoreResult(
-            result,
-            week.nebraskaGame
-          )}
+      result,
+      week.nebraskaGame
+    )}
         </td>
 
         <td>
@@ -867,19 +919,19 @@ console.assert(
 
 console.assert(
   sampleLeaderboard[0].b1gCorrect === 13 &&
-    sampleLeaderboard[0].b1gAttempted === 14,
+  sampleLeaderboard[0].b1gAttempted === 14,
   "Jake should have a 13/14 B1G record."
 );
 
 console.assert(
   sampleLeaderboard[1].rank === 2 &&
-    sampleLeaderboard[2].rank === 2,
+  sampleLeaderboard[2].rank === 2,
   "The 40-point players should be tied for second."
 );
 
 console.assert(
   sampleLeaderboard[1].totalPoints === 40 &&
-    sampleLeaderboard[2].totalPoints === 40,
+  sampleLeaderboard[2].totalPoints === 40,
   "Example Player and Test Player should each have 40 points."
 );
 
@@ -907,7 +959,7 @@ function renderLeaderboard(standings) {
     "#leaderboard-table-body"
   );
 
-  const rows = standings.map(function(player) {
+  const rows = standings.map(function (player) {
     return `
       <tr>
         <td>${player.rank}</td>
@@ -926,8 +978,8 @@ function renderLeaderboard(standings) {
 
         <td>
           ${formatB1gAccuracy(
-            player.b1gAccuracy
-          )}
+      player.b1gAccuracy
+    )}
         </td>
 
         <td>
@@ -947,7 +999,7 @@ function renderLeaderboard(standings) {
 renderLeaderboard(sampleLeaderboard);
 
 console.table(
-  sampleWeeklyResults.map(function(result) {
+  sampleWeeklyResults.map(function (result) {
     return {
       player: result.playerName,
       atsPoints: result.atsPoints,
@@ -965,100 +1017,102 @@ console.table(
 );
 
 function normalizePickFormData(apiData) {
-    return {
-        weekId: apiData.week.weekId,
-        weekNumber: apiData.week.weekNumber,
-        weekName: apiData.week.weekName,
-        deadline: apiData.week.deadline,
-        deadlineDisplay: apiData.week.deadlineDisplay,
-        effectiveStatus: apiData.week.effectiveStatus,
-        nebraskaGame: apiData.nebraskaGame,
-        b1gGames: apiData.b1gGames
-    };
+  return {
+    weekId: apiData.week.weekId,
+    weekNumber: apiData.week.weekNumber,
+    weekName: apiData.week.weekName,
+    deadline: apiData.week.deadline,
+    deadlineDisplay: apiData.week.deadlineDisplay,
+    effectiveStatus: apiData.week.effectiveStatus,
+    nebraskaGame: apiData.nebraskaGame,
+    b1gGames: apiData.b1gGames
+  };
 }
 
 function applyPickFormStatus(status) {
-    const statusElement =
-        document.querySelector("#pick-form-status");
+  const statusElement =
+    document.querySelector("#pick-form-status");
 
-    const formControls =
-        picksForm.querySelectorAll("input, select, button");
+  const formControls =
+    picksForm.querySelectorAll(
+      '.game-card input, button[type="submit"]'
+    );
 
-    const isOpen = status === "OPEN";
+  const isOpen = status === "OPEN";
 
-    formControls.forEach(function(control) {
-        control.disabled = !isOpen;
-    });
+  formControls.forEach(function (control) {
+    control.disabled = !isOpen;
+  });
 
-    const statusMessages = {
-        OPEN: "Picks are open.",
-        NOT_READY:
-            "This week is not open yet. The deadline or Nebraska betting lines are still being prepared.",
-        LOCKED:
-            "The deadline has passed. Picks are locked for this week.",
-        RESULTS_ENTERED:
-            "Picks are locked and results have been entered.",
-        FINALIZED:
-            "This week has been finalized.",
-        INACTIVE:
-            "This week is currently inactive."
-    };
+  const statusMessages = {
+    OPEN: "Picks are open.",
+    NOT_READY:
+      "This week is not open yet. The deadline or Nebraska betting lines are still being prepared.",
+    LOCKED:
+      "The deadline has passed. Picks are locked for this week.",
+    RESULTS_ENTERED:
+      "Picks are locked and results have been entered.",
+    FINALIZED:
+      "This week has been finalized.",
+    INACTIVE:
+      "This week is currently inactive."
+  };
 
-    statusElement.textContent =
-        statusMessages[status] || "This week is unavailable.";
+  statusElement.textContent =
+    statusMessages[status] || "This week is unavailable.";
 }
 
 async function loadPickForm(weekId) {
-    const statusElement =
-        document.querySelector("#pick-form-status");
+  const statusElement =
+    document.querySelector("#pick-form-status");
 
-    statusElement.textContent = "Loading this week's games...";
+  statusElement.textContent = "Loading this week's games...";
 
-    const requestUrl = new URL(PICKEM_API_URL);
-    requestUrl.searchParams.set("action", "getPickForm");
-    requestUrl.searchParams.set("weekId", weekId);
+  const requestUrl = new URL(PICKEM_API_URL);
+  requestUrl.searchParams.set("action", "getPickForm");
+  requestUrl.searchParams.set("weekId", weekId);
 
-    try {
-        const response = await fetch(requestUrl.toString());
+  try {
+    const response = await fetch(requestUrl.toString());
 
-        if (!response.ok) {
-            throw new Error(`HTTP error ${response.status}`);
-        }
-
-        const payload = await response.json();
-
-        if (!payload.success) {
-            throw new Error(
-                payload.error?.message ||
-                "The week could not be loaded."
-            );
-        }
-
-        currentPickWeek =
-            normalizePickFormData(payload.data);
-
-        renderPickForm(currentPickWeek);
-        applyPickFormStatus(
-            currentPickWeek.effectiveStatus
-        );
-
-        console.log(
-            "Loaded live pick-form data:",
-            currentPickWeek
-        );
-    } catch (error) {
-        console.error("Pick form loading failed:", error);
-
-        currentPickWeek = null;
-        statusElement.textContent =
-            "The weekly games could not be loaded. Please refresh the page and try again.";
-
-        picksForm
-            .querySelectorAll("input, select, button")
-            .forEach(function(control) {
-                control.disabled = true;
-            });
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
     }
+
+    const payload = await response.json();
+
+    if (!payload.success) {
+      throw new Error(
+        payload.error?.message ||
+        "The week could not be loaded."
+      );
+    }
+
+    currentPickWeek =
+      normalizePickFormData(payload.data);
+
+    renderPickForm(currentPickWeek);
+    applyPickFormStatus(
+      currentPickWeek.effectiveStatus
+    );
+
+    console.log(
+      "Loaded live pick-form data:",
+      currentPickWeek
+    );
+  } catch (error) {
+    console.error("Pick form loading failed:", error);
+
+    currentPickWeek = null;
+    statusElement.textContent =
+      "The weekly games could not be loaded. Please refresh the page and try again.";
+
+    picksForm
+      .querySelectorAll("input, select, button")
+      .forEach(function (control) {
+        control.disabled = true;
+      });
+  }
 }
 
 const registrationToggle =
@@ -1073,7 +1127,7 @@ const registrationPanel =
 
 registrationToggle.addEventListener(
   "click",
-  function() {
+  function () {
     const isCurrentlyHidden =
       registrationPanel.hidden;
 
@@ -1103,7 +1157,7 @@ const registerPlayerButton =
 
 registrationForm.addEventListener(
   "submit",
-  async function(event) {
+  async function (event) {
     event.preventDefault();
 
     registrationMessage.textContent = "";
@@ -1169,9 +1223,22 @@ registrationForm.addEventListener(
       const playerSelect =
         document.querySelector("#player-select");
 
+      const emptyOption =
+        playerSelect.querySelector(
+          'option[value=""]'
+        );
+
+      if (emptyOption) {
+        emptyOption.textContent =
+          "Select your name";
+
+        emptyOption.disabled = true;
+        emptyOption.selected = false;
+      }
+
       let playerOption =
         Array.from(playerSelect.options)
-          .find(function(option) {
+          .find(function (option) {
             return option.value ===
               newPlayer.playerId;
           });
@@ -1192,6 +1259,7 @@ registrationForm.addEventListener(
 
       playerSelect.value =
         newPlayer.playerId;
+      playerSelect.disabled = false;
 
       registrationForm.reset();
 
@@ -1218,4 +1286,262 @@ registrationForm.addEventListener(
   }
 );
 
-  loadPickForm("W01");
+const loadPicksButton =
+  document.querySelector(
+    "#load-picks-button"
+  );
+
+const loadPicksMessage =
+  document.querySelector(
+    "#load-picks-message"
+  );
+
+function clearDisplayedPicks() {
+  picksForm
+    .querySelectorAll(
+      '.game-card input[type="radio"]'
+    )
+    .forEach(function(input) {
+      input.checked = false;
+    });
+
+  picksForm
+    .querySelectorAll(
+      '.game-card input[type="number"]'
+    )
+    .forEach(function(input) {
+      input.value = "";
+    });
+}
+
+function setFormControlValue(
+  controlName,
+  value
+) {
+  if (
+    value === null ||
+    value === undefined
+  ) {
+    return;
+  }
+
+  const control =
+    picksForm.elements.namedItem(
+      controlName
+    );
+
+  if (control) {
+    control.value = String(value);
+  }
+}
+
+loadPicksButton.addEventListener(
+  "click",
+  async function() {
+    if (!currentPickWeek) {
+      loadPicksMessage.textContent =
+        "The weekly games have not finished loading.";
+
+      return;
+    }
+
+    const playerId =
+      document.querySelector(
+        "#player-select"
+      ).value;
+
+    const pin =
+      document.querySelector(
+        "#player-pin"
+      ).value;
+
+    if (!playerId) {
+      loadPicksMessage.textContent =
+        "Select your player name first.";
+
+      return;
+    }
+
+    if (!/^\d{4}$/.test(pin)) {
+      loadPicksMessage.textContent =
+        "Enter your four-digit PIN.";
+
+      return;
+    }
+
+    const request = {
+      action: "getPlayerPicks",
+      playerId: playerId,
+      pin: pin,
+      weekId: currentPickWeek.weekId
+    };
+
+    loadPicksButton.disabled = true;
+    loadPicksButton.textContent =
+      "Loading Picks...";
+
+    loadPicksMessage.textContent = "";
+
+    try {
+      const response = await fetch(
+        PICKEM_API_URL,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify(request)
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `HTTP error ${response.status}`
+        );
+      }
+
+      const payload =
+        await response.json();
+
+      if (!payload.success) {
+        throw new Error(
+          payload.error?.message ||
+          "Saved picks could not be loaded."
+        );
+      }
+
+      const savedPicks =
+        payload.data.picks;
+
+      clearDisplayedPicks();
+
+      savedPicks.forEach(function(pick) {
+        setFormControlValue(
+          `winner-${pick.gameId}`,
+          pick.winnerPick
+        );
+
+        setFormControlValue(
+          `ats-${pick.gameId}`,
+          pick.atsPick
+        );
+
+        setFormControlValue(
+          `ou-${pick.gameId}`,
+          pick.ouPick
+        );
+
+        setFormControlValue(
+          `predicted-away-${pick.gameId}`,
+          pick.predictedAwayScore
+        );
+
+        setFormControlValue(
+          `predicted-home-${pick.gameId}`,
+          pick.predictedHomeScore
+        );
+      });
+
+      if (savedPicks.length === 0) {
+        loadPicksMessage.textContent =
+          "You do not have saved picks for this week.";
+      } else {
+        loadPicksMessage.textContent =
+          `${savedPicks.length} saved picks loaded.`;
+      }
+    } catch (error) {
+      console.error(
+        "Saved-pick loading failed:",
+        error
+      );
+
+      loadPicksMessage.textContent =
+        error.message;
+    } finally {
+      loadPicksButton.disabled = false;
+      loadPicksButton.textContent =
+        "Load My Saved Picks";
+    }
+  }
+);
+
+async function loadPlayers() {
+  const playerSelect =
+    document.querySelector("#player-select");
+
+  playerSelect.disabled = true;
+  playerSelect.innerHTML =
+    '<option value="">Loading players...</option>';
+
+  const requestUrl =
+    new URL(PICKEM_API_URL);
+
+  requestUrl.searchParams.set(
+    "action",
+    "getPlayers"
+  );
+
+  try {
+    const response = await fetch(
+      requestUrl.toString()
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP error ${response.status}`
+      );
+    }
+
+    const payload = await response.json();
+
+    if (!payload.success) {
+      throw new Error(
+        payload.error?.message ||
+        "Players could not be loaded."
+      );
+    }
+
+    const players = payload.data;
+
+    playerSelect.innerHTML =
+      '<option value="">Select your name</option>';
+
+    players.forEach(function (player) {
+      const option =
+        document.createElement("option");
+
+      option.value = player.playerId;
+      option.textContent = player.playerName;
+
+      playerSelect.appendChild(option);
+    });
+
+    if (players.length === 0) {
+      playerSelect.innerHTML =
+        '<option value="">No players registered yet</option>';
+
+      playerSelect.disabled = true;
+    } else {
+      playerSelect.disabled = false;
+    }
+
+    console.log(
+      "Loaded active players:",
+      players
+    );
+  } catch (error) {
+    console.error(
+      "Player loading failed:",
+      error
+    );
+
+    playerSelect.innerHTML =
+      '<option value="">Players could not be loaded</option>';
+
+    playerSelect.disabled = true;
+  }
+}
+
+loadPlayers();
+loadPickForm("W01");

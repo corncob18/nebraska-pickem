@@ -1,348 +1,262 @@
 <!DOCTYPE html>>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
->
+  <meta charset="UTF-8">
 
-    <title>Nebraska Pick'em</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="styles.css">
-    <script src="scoring.js" defer></script>
-    <script src="app.js" defer></script>
+  <title>Nebraska Pick'em</title>
+
+  <link rel="stylesheet" href="styles.css">
+  <script src="scoring.js" defer></script>
+  <script src="app.js" defer></script>
 </head>
 
 <body>
-    <header class="site-header">
+  <header class="site-header">
     <h1>Nebraska Pick'Em</h1>
     <p>Nebraska & B1G Football Picks</p>
 
     <nav class="site-nav" aria-label="Main Navigation">
-        <button
-            class="nav-button active"
-            type="button"
-            data-page="picks"
-        
-        >
-            Picks
-        </button>
+      <button class="nav-button active" type="button" data-page="picks">
+        Picks
+      </button>
 
-        <button
-            class="nav-button"
-            type="button"
-            data-page="results"
-        >
-            Results
-        </button>
+      <button class="nav-button" type="button" data-page="results">
+        Results
+      </button>
 
-        <button
-            class="nav-button"
-            type="button"
-            data-page="leaderboard"
-        >
-            Leaderboard
-        </button>
+      <button class="nav-button" type="button" data-page="leaderboard">
+        Leaderboard
+      </button>
     </nav>
-</header>
+  </header>
 
-<main>
-<section id="picks" class="page-section">
-  <div class="picks-heading">
-    <p id="week-label" class="eyebrow"></p>
-    <h2>Weekly Picks</h2>
+  <main>
+    <section id="picks" class="page-section">
+      <div class="picks-heading">
+        <p id="week-label" class="eyebrow"></p>
+        <h2>Weekly Picks</h2>
 
-    <div class="deadline-box">
-      <span>Picks lock:</span>
-      <time id="deadline-time"></time>
-    </div>
-  </div>
-
-  <p
-    id="pick-form-status"
-    class="form-message"
-    aria-live="polite"
->
-    Loading this week's games...
-  </p>
-
-<section
-  class="form-section"
-  aria-labelledby="registration-heading"
->
-  <button
-    id="toggle-registration-button"
-    type="button"
-    aria-expanded="false"
-    aria-controls="registration-panel"
-  >
-    Register New Player
-  </button>
-
-  <div id="registration-panel" hidden>
-    <h3 id="registration-heading">
-      New Player Registration
-    </h3>
-
-    <p class="helper-text">
-      Register once, then use your name and PIN to submit
-      picks each week.
-    </p>
-
-    <form id="registration-form">
-      <div class="form-grid">
-        <div class="form-field">
-          <label for="registration-name">
-            Player Name
-          </label>
-
-          <input
-            id="registration-name"
-            name="playerName"
-            type="text"
-            minlength="2"
-            maxlength="40"
-            autocomplete="name"
-            required
-          >
-        </div>
-
-        <div class="form-field">
-          <label for="registration-pin">
-            4-digit PIN
-          </label>
-
-          <input
-            id="registration-pin"
-            name="pin"
-            type="password"
-            inputmode="numeric"
-            pattern="[0-9]{4}"
-            minlength="4"
-            maxlength="4"
-            autocomplete="new-password"
-            required
-          >
-        </div>
-
-        <div class="form-field">
-          <label for="registration-pin-confirm">
-            Confirm PIN
-          </label>
-
-          <input
-            id="registration-pin-confirm"
-            name="pinConfirmation"
-            type="password"
-            inputmode="numeric"
-            pattern="[0-9]{4}"
-            minlength="4"
-            maxlength="4"
-            autocomplete="new-password"
-            required
-          >
-        </div>
-
-        <div class="form-field">
-          <label for="registration-code">
-            Registration Code
-          </label>
-
-          <input
-            id="registration-code"
-            name="registrationCode"
-            type="password"
-            autocomplete="off"
-            required
-          >
+        <div class="deadline-box">
+          <span>Picks lock:</span>
+          <time id="deadline-time"></time>
         </div>
       </div>
 
-      <button
-        id="register-player-button"
-        type="submit"
-      >
-        Create Player
-      </button>
+      <p id="pick-form-status" class="form-message" aria-live="polite">
+        Loading this week's games...
+      </p>
 
-      <p
-        id="registration-message"
-        class="form-message"
-        aria-live="polite"
-      ></p>
-    </form>
-  </div>
-</section>
+      <section class="form-section" aria-labelledby="registration-heading">
+        <button id="toggle-registration-button" type="button" aria-expanded="false" aria-controls="registration-panel">
+          Register New Player
+        </button>
 
-  <form id="picks-form">
-    <section
-      class="form-section"
-      aria-labelledby="player-heading"
-    >
-      <h3 id="player-heading">Player Identification</h3>
+        <div id="registration-panel" hidden>
+          <h3 id="registration-heading">
+            New Player Registration
+          </h3>
 
-      <div class="form-grid">
-        <div class="form-field">
-          <label for="player-select">Player</label>
+          <p class="helper-text">
+            Register once, then use your name and PIN to submit
+            picks each week.
+          </p>
 
-          <select
-            id="player-select"
-            name="playerId"
-            required
-          >
-            <option value="">Select your name</option>
-            <option value="P001">Jake Bowen</option>
-            <option value="P002">Example Player</option>
-          </select>
+          <form id="registration-form">
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="registration-name">
+                  Player Name
+                </label>
+
+                <input id="registration-name" name="playerName" type="text" minlength="2" maxlength="40"
+                  autocomplete="name" required>
+              </div>
+
+              <div class="form-field">
+                <label for="registration-pin">
+                  4-digit PIN
+                </label>
+
+                <input id="registration-pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]{4}"
+                  minlength="4" maxlength="4" autocomplete="new-password" required>
+              </div>
+
+              <div class="form-field">
+                <label for="registration-pin-confirm">
+                  Confirm PIN
+                </label>
+
+                <input id="registration-pin-confirm" name="pinConfirmation" type="password" inputmode="numeric"
+                  pattern="[0-9]{4}" minlength="4" maxlength="4" autocomplete="new-password" required>
+              </div>
+
+              <div class="form-field">
+                <label for="registration-code">
+                  Registration Code
+                </label>
+
+                <input id="registration-code" name="registrationCode" type="password" autocomplete="off" required>
+              </div>
+            </div>
+
+            <button id="register-player-button" type="submit">
+              Create Player
+            </button>
+
+            <p id="registration-message" class="form-message" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
+      <form id="picks-form">
+        <section class="form-section" aria-labelledby="player-heading">
+          <h3 id="player-heading">
+            Player Identification
+          </h3>
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="player-select">
+                Player
+              </label>
+
+              <select id="player-select" name="playerId" required>
+                <option value="">
+                  Loading players...
+                </option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="player-pin">
+                4-digit PIN
+              </label>
+
+              <input id="player-pin" name="playerPin" type="password" inputmode="numeric" pattern="[0-9]{4}"
+                minlength="4" maxlength="4" autocomplete="current-password" required>
+            </div>
+          </div>
+
+          <button id="load-picks-button" type="button">
+            Load My Saved Picks
+          </button>
+
+          <p id="load-picks-message" class="form-message" aria-live="polite"></p>
+
+          <p class="helper-text">
+            Returning players: select your name and enter your PIN.
+          </p>
+        </section>
+
+        <section class="form-section" aria-labelledby="nebraska-heading">
+          <h3 id="nebraska-heading">Nebraska Game</h3>
+
+          <p class="sample-notice">
+            Select Nebraska against the spread, the game total,
+            the winner, and your predicted final score.
+          </p>
+
+          <div id="nebraska-game-container"></div>
+        </section>
+
+        <section class="form-section" aria-labelledby="b1g-heading">
+          <h3 id="b1g-heading">B1G Picks</h3>
+          <p>Select the winner of each conference game.</p>
+
+          <div id="b1g-games-container" class="game-list"></div>
+        </section>
+
+        <button class="primary-button" type="submit">
+          Submit Picks
+        </button>
+
+        <p id="form-message" class="form-message" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section id="results" class="page-section" hidden>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Sample Data</p>
+          <h2>Weekly Results</h2>
         </div>
 
-        <div class="form-field">
-          <label for="player-pin">4-digit PIN</label>
+        <div class="form-field compact-field">
+          <label for="results-week-select">Week</label>
 
-          <input
-            id="player-pin"
-            name="playerPin"
-            type="password"
-            inputmode="numeric"
-            pattern="[0-9]{4}"
-            minlength="4"
-            maxlength="4"
-            autocomplete="current-password"
-            required
-          >
+          <select id="results-week-select">
+            <option value="W04">Week 4</option>
+          </select>
+        </div>
+      </div>
+
+      <p id="results-status" class="results-status">
+        Final Results
+      </p>
+
+      <div class="table-wrapper">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Player</th>
+              <th>ATS</th>
+              <th>O/U</th>
+              <th>Winner</th>
+              <th>Predicted Score</th>
+              <th>B1G</th>
+              <th>Bonus</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+
+          <tbody id="results-table-body"></tbody>
+        </table>
+      </div>
+
+      <p class="helper-text">
+        Select a B1G record to view that player’s individual
+        conference picks.
+      </p>
+    </section>
+
+    <section id="leaderboard" class="page-section" hidden>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">
+            Through Week 5 — Sample Data
+          </p>
+
+          <h2>Season Leaderboard</h2>
         </div>
       </div>
 
       <p class="helper-text">
-          Returning players: select your name and enter your PIN.
-      </p>
-    </section>
-
-    <section
-      class="form-section"
-      aria-labelledby="nebraska-heading"
-    >
-      <h3 id="nebraska-heading">Nebraska Game</h3>
-
-      <p class="sample-notice">
-        Select Nebraska against the spread, the game total,
-        the winner, and your predicted final score.
+        Players are ranked by total points. B1G statistics do not
+        break a points tie.
       </p>
 
-      <div id="nebraska-game-container"></div>
+      <div class="table-wrapper">
+        <table class="results-table leaderboard-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Player</th>
+              <th>Points</th>
+              <th>B1G Correct</th>
+              <th>B1G Accuracy</th>
+              <th>Perfect Weeks</th>
+              <th>Weeks Played</th>
+            </tr>
+          </thead>
+
+          <tbody id="leaderboard-table-body"></tbody>
+        </table>
+      </div>
     </section>
-
-    <section
-      class="form-section"
-      aria-labelledby="b1g-heading"
-    >
-      <h3 id="b1g-heading">B1G Picks</h3>
-      <p>Select the winner of each conference game.</p>
-
-      <div
-        id="b1g-games-container"
-        class="game-list"
-      ></div>
-    </section>
-
-    <button class="primary-button" type="submit">
-      Submit Picks
-    </button>
-
-    <p
-      id="form-message"
-      class="form-message"
-      aria-live="polite"
-    ></p>
-  </form>
-</section>
-    </section>
-
-<section id="results" class="page-section" hidden>
-  <div class="section-heading">
-    <div>
-      <p class="eyebrow">Sample Data</p>
-      <h2>Weekly Results</h2>
-    </div>
-
-    <div class="form-field compact-field">
-      <label for="results-week-select">Week</label>
-
-      <select id="results-week-select">
-        <option value="W04">Week 4</option>
-      </select>
-    </div>
-  </div>
-
-  <p id="results-status" class="results-status">
-    Final Results
-  </p>
-
-  <div class="table-wrapper">
-    <table class="results-table">
-      <thead>
-        <tr>
-          <th>Player</th>
-          <th>ATS</th>
-          <th>O/U</th>
-          <th>Winner</th>
-          <th>Predicted Score</th>
-          <th>B1G</th>
-          <th>Bonus</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-
-      <tbody id="results-table-body"></tbody>
-    </table>
-  </div>
-
-  <p class="helper-text">
-    Select a B1G record to view that player’s individual
-    conference picks.
-  </p>
-</section>
-
-    <section
-  id="leaderboard"
-  class="page-section"
-  hidden
->
-  <div class="section-heading">
-    <div>
-      <p class="eyebrow">
-        Through Week 5 — Sample Data
-      </p>
-
-      <h2>Season Leaderboard</h2>
-    </div>
-  </div>
-
-  <p class="helper-text">
-    Players are ranked by total points. B1G statistics do not
-    break a points tie.
-  </p>
-
-  <div class="table-wrapper">
-    <table class="results-table leaderboard-table">
-      <thead>
-        <tr>
-          <th>Rank</th>
-          <th>Player</th>
-          <th>Points</th>
-          <th>B1G Correct</th>
-          <th>B1G Accuracy</th>
-          <th>Perfect Weeks</th>
-          <th>Weeks Played</th>
-        </tr>
-      </thead>
-
-      <tbody id="leaderboard-table-body"></tbody>
-    </table>
-  </div>
-</section>
-</main>
+  </main>
 </body>
+
 </html>
