@@ -1286,7 +1286,7 @@ function renderLeaderboard(standings) {
         <td>${player.rank}</td>
 
         <td>
-          <strong>${player.playerName}</strong>
+          <strong>${escapeHtml(player.playerName)}</strong>
         </td>
 
         <td class="leaderboard-points">
@@ -1317,7 +1317,178 @@ function renderLeaderboard(standings) {
   tableBody.innerHTML = rows.join("");
 }
 
-renderLeaderboard(sampleLeaderboard);
+function buildLiveFinalizedWeeks(apiData) {
+  return apiData.weeks.map(function (week) {
+    const weekGames =
+      apiData.games.filter(function (game) {
+        return (
+          String(game.weekId) ===
+          String(week.weekId)
+        );
+      });
+
+    const weekPicks =
+      apiData.picks.filter(function (pick) {
+        return (
+          String(pick.weekId) ===
+          String(week.weekId)
+        );
+      });
+
+    const participatingPlayerIds =
+      new Set(
+        weekPicks.map(function (pick) {
+          return String(pick.playerId);
+        })
+      );
+
+    const weekPlayers =
+      apiData.players.filter(
+        function (player) {
+          return participatingPlayerIds.has(
+            String(player.playerId)
+          );
+        }
+      );
+
+    const scoringInput =
+      buildLiveWeeklyScoringInput({
+        week: {
+          ...week,
+          effectiveStatus: "FINALIZED",
+          resultsComplete: true
+        },
+        games: weekGames,
+        picks: weekPicks,
+        players: weekPlayers
+      });
+
+    const results =
+      calculateWeeklyResults(
+        scoringInput.completedWeek,
+        scoringInput.playerSubmissions
+      );
+
+    return {
+      weekId: week.weekId,
+      results: results
+    };
+  });
+}
+
+async function loadLeaderboard() {
+  const leaderboardStatus =
+    document.querySelector(
+      "#leaderboard-status"
+    );
+
+  const leaderboardThrough =
+    document.querySelector(
+      "#leaderboard-through"
+    );
+
+  const tableWrapper =
+    document.querySelector(
+      "#leaderboard-table-wrapper"
+    );
+
+  const tableBody =
+    document.querySelector(
+      "#leaderboard-table-body"
+    );
+
+  tableWrapper.hidden = true;
+  tableBody.innerHTML = "";
+
+  leaderboardStatus.textContent =
+    "Loading season standings...";
+
+  const requestUrl =
+    new URL(PICKEM_API_URL);
+
+  requestUrl.searchParams.set(
+    "action",
+    "getLeaderboardData"
+  );
+
+  try {
+    const response = await fetch(
+      requestUrl.toString()
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP error ${response.status}`
+      );
+    }
+
+    const payload = await response.json();
+
+    if (!payload.success) {
+      throw new Error(
+        payload.error?.message ||
+        "Season standings could not be loaded."
+      );
+    }
+
+    const apiData = payload.data;
+
+    if (apiData.weeks.length === 0) {
+      leaderboardThrough.textContent =
+        "Season Standings";
+
+      leaderboardStatus.textContent =
+        "Standings will appear after the first week is finalized.";
+
+      return;
+    }
+
+    const finalizedWeeks =
+      buildLiveFinalizedWeeks(apiData);
+
+    const standings =
+      calculateLeaderboard(
+        finalizedWeeks
+      );
+
+    if (standings.length === 0) {
+      leaderboardStatus.textContent =
+        "No finalized player results are available.";
+
+      return;
+    }
+
+    renderLeaderboard(standings);
+
+    const latestWeek =
+      apiData.weeks[
+      apiData.weeks.length - 1
+      ];
+
+    leaderboardThrough.textContent =
+      `Through ${latestWeek.weekName}`;
+
+    leaderboardStatus.textContent =
+      "Standings include finalized weeks only.";
+
+    tableWrapper.hidden = false;
+
+    console.log(
+      "Loaded live leaderboard:",
+      standings
+    );
+  } catch (error) {
+    console.error(
+      "Leaderboard loading failed:",
+      error
+    );
+
+    leaderboardStatus.textContent =
+      error.message;
+  }
+}
+
+loadLeaderboard();
 
 console.table(
   sampleWeeklyResults.map(function (result) {

@@ -229,20 +229,24 @@
     <section id="leaderboard" class="page-section" hidden>
       <div class="section-heading">
         <div>
-          <p class="eyebrow">
-            Through Week 5 — Sample Data
+          <p id="leaderboard-through" class="eyebrow">
+            Season Standings
           </p>
 
           <h2>Season Leaderboard</h2>
         </div>
       </div>
 
+      <p id="leaderboard-status" class="results-status" aria-live="polite">
+        Loading season standings...
+      </p>
+
       <p class="helper-text">
         Players are ranked by total points. B1G statistics do not
         break a points tie.
       </p>
 
-      <div class="table-wrapper">
+      <div id="leaderboard-table-wrapper" class="table-wrapper" hidden>
         <table class="results-table leaderboard-table">
           <thead>
             <tr>
