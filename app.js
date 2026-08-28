@@ -420,7 +420,7 @@ picksForm.addEventListener(
       );
 
       formMessage.textContent =
-        `${payload.data.pickCount} picks saved successfully.`;
+        "All picks saved successfully.";
     } catch (error) {
       console.error(
         "Pick submission failed:",
@@ -1062,15 +1062,29 @@ function applyPickFormStatus(status) {
     statusMessages[status] || "This week is unavailable.";
 }
 
-async function loadPickForm(weekId) {
+async function loadPickForm(weekId = null) {
   const statusElement =
     document.querySelector("#pick-form-status");
 
   statusElement.textContent = "Loading this week's games...";
 
   const requestUrl = new URL(PICKEM_API_URL);
-  requestUrl.searchParams.set("action", "getPickForm");
-  requestUrl.searchParams.set("weekId", weekId);
+  if (weekId) {
+    requestUrl.searchParams.set(
+      "action",
+      "getPickForm"
+    );
+
+    requestUrl.searchParams.set(
+      "weekId",
+      weekId
+    );
+  } else {
+    requestUrl.searchParams.set(
+      "action",
+      "getCurrentPickForm"
+    );
+  }
 
   try {
     const response = await fetch(requestUrl.toString());
@@ -1301,7 +1315,7 @@ function clearDisplayedPicks() {
     .querySelectorAll(
       '.game-card input[type="radio"]'
     )
-    .forEach(function(input) {
+    .forEach(function (input) {
       input.checked = false;
     });
 
@@ -1309,7 +1323,7 @@ function clearDisplayedPicks() {
     .querySelectorAll(
       '.game-card input[type="number"]'
     )
-    .forEach(function(input) {
+    .forEach(function (input) {
       input.value = "";
     });
 }
@@ -1337,7 +1351,7 @@ function setFormControlValue(
 
 loadPicksButton.addEventListener(
   "click",
-  async function() {
+  async function () {
     if (!currentPickWeek) {
       loadPicksMessage.textContent =
         "The weekly games have not finished loading.";
@@ -1416,7 +1430,7 @@ loadPicksButton.addEventListener(
 
       clearDisplayedPicks();
 
-      savedPicks.forEach(function(pick) {
+      savedPicks.forEach(function (pick) {
         setFormControlValue(
           `winner-${pick.gameId}`,
           pick.winnerPick
@@ -1448,7 +1462,7 @@ loadPicksButton.addEventListener(
           "You do not have saved picks for this week.";
       } else {
         loadPicksMessage.textContent =
-          `${savedPicks.length} saved picks loaded.`;
+          "All saved picks loaded.";
       }
     } catch (error) {
       console.error(
@@ -1544,4 +1558,4 @@ async function loadPlayers() {
 }
 
 loadPlayers();
-loadPickForm("W01");
+loadPickForm();
