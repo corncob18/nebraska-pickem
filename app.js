@@ -683,6 +683,16 @@ function formatB1gDetails(result) {
   `;
 }
 
+function escapeHtml(value) {
+  const element =
+    document.createElement("div");
+
+  element.textContent =
+    String(value);
+
+  return element.innerHTML;
+}
+
 function renderWeeklyResults(week, results) {
   const tableBody = document.querySelector(
     "#results-table-body"
@@ -699,7 +709,7 @@ function renderWeeklyResults(week, results) {
     return `
       <tr>
         <td>
-          <strong>${result.playerName}</strong>
+          <strong>${escapeHtml(result.playerName)}</strong>
         </td>
 
         <td>
@@ -751,10 +761,321 @@ function renderWeeklyResults(week, results) {
   tableBody.innerHTML = rows.join("");
 }
 
-renderWeeklyResults(
-  sampleCompletedWeek,
-  sampleWeeklyResults
+async function loadResultWeeks() {
+  const weekSelect =
+    document.querySelector(
+      "#results-week-select"
+    );
+
+  const resultsStatus =
+    document.querySelector(
+      "#results-status"
+    );
+
+  const tableWrapper =
+    document.querySelector(
+      "#results-table-wrapper"
+    );
+
+  const resultsHelper =
+    document.querySelector(
+      "#results-helper"
+    );
+
+  weekSelect.disabled = true;
+  weekSelect.innerHTML =
+    '<option value="">Loading available weeks...</option>';
+
+  resultsStatus.textContent =
+    "Loading available weeks...";
+
+  tableWrapper.hidden = true;
+  resultsHelper.hidden = true;
+
+  const requestUrl =
+    new URL(PICKEM_API_URL);
+
+  requestUrl.searchParams.set(
+    "action",
+    "getResultWeeks"
+  );
+
+  try {
+    const response = await fetch(
+      requestUrl.toString()
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP error ${response.status}`
+      );
+    }
+
+    const payload = await response.json();
+
+    if (!payload.success) {
+      throw new Error(
+        payload.error?.message ||
+        "Available result weeks could not be loaded."
+      );
+    }
+
+    const resultWeeks = payload.data;
+
+    if (resultWeeks.length === 0) {
+      weekSelect.innerHTML =
+        '<option value="">No results available</option>';
+
+      resultsStatus.textContent =
+        "Weekly results will appear after the first deadline passes.";
+
+      return;
+    }
+
+    weekSelect.innerHTML =
+      '<option value="">Select a week</option>';
+
+    resultWeeks.forEach(function (week) {
+      const option =
+        document.createElement("option");
+
+      option.value = week.weekId;
+      option.textContent = week.weekName;
+
+      weekSelect.appendChild(option);
+    });
+
+    weekSelect.disabled = false;
+
+    resultsStatus.textContent =
+      "Select a week to view its results.";
+
+    console.log(
+      "Loaded available result weeks:",
+      resultWeeks
+    );
+  } catch (error) {
+    console.error(
+      "Result-week loading failed:",
+      error
+    );
+
+    weekSelect.innerHTML =
+      '<option value="">Results unavailable</option>';
+
+    resultsStatus.textContent =
+      "Available result weeks could not be loaded.";
+  }
+}
+
+function buildLiveWeeklyScoringInput(apiData) {
+  const nebraskaGames =
+    apiData.games.filter(function (game) {
+      return game.gameType === "NEBRASKA";
+    });
+
+  if (nebraskaGames.length > 1) {
+    throw new Error(
+      "More than one Nebraska game was returned."
+    );
+  }
+
+  const completedWeek = {
+    ...apiData.week,
+    nebraskaGame:
+      nebraskaGames[0] || null,
+    b1gGames:
+      apiData.games.filter(function (game) {
+        return game.gameType === "B1G";
+      })
+  };
+
+  const picksByPlayerId =
+    new Map();
+
+  apiData.picks.forEach(function (pick) {
+    const playerId =
+      String(pick.playerId);
+
+    if (!picksByPlayerId.has(playerId)) {
+      picksByPlayerId.set(
+        playerId,
+        []
+      );
+    }
+
+    picksByPlayerId
+      .get(playerId)
+      .push({
+        gameId: pick.gameId,
+        winnerPick: pick.winnerPick,
+        atsPick: pick.atsPick,
+        ouPick: pick.ouPick,
+        predictedAwayScore:
+          pick.predictedAwayScore,
+        predictedHomeScore:
+          pick.predictedHomeScore
+      });
+  });
+
+  const playerSubmissions =
+    apiData.players.map(function (player) {
+      return {
+        playerId: player.playerId,
+        playerName: player.playerName,
+        picks:
+          picksByPlayerId.get(
+            String(player.playerId)
+          ) || []
+      };
+    });
+
+  return {
+    completedWeek,
+    playerSubmissions
+  };
+}
+
+async function loadWeeklyResults(weekId) {
+  const resultsStatus =
+    document.querySelector(
+      "#results-status"
+    );
+
+  const tableWrapper =
+    document.querySelector(
+      "#results-table-wrapper"
+    );
+
+  const tableBody =
+    document.querySelector(
+      "#results-table-body"
+    );
+
+  const resultsHelper =
+    document.querySelector(
+      "#results-helper"
+    );
+
+  tableWrapper.hidden = true;
+  resultsHelper.hidden = true;
+  tableBody.innerHTML = "";
+
+  if (!weekId) {
+    resultsStatus.textContent =
+      "Select a week to view its results.";
+
+    return;
+  }
+
+  resultsStatus.textContent =
+    "Loading weekly results...";
+
+  const requestUrl =
+    new URL(PICKEM_API_URL);
+
+  requestUrl.searchParams.set(
+    "action",
+    "getWeeklyResults"
+  );
+
+  requestUrl.searchParams.set(
+    "weekId",
+    weekId
+  );
+
+  try {
+    const response = await fetch(
+      requestUrl.toString()
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP error ${response.status}`
+      );
+    }
+
+    const payload = await response.json();
+
+    if (!payload.success) {
+      throw new Error(
+        payload.error?.message ||
+        "Weekly results could not be loaded."
+      );
+    }
+
+    const apiData = payload.data;
+
+    if (
+      apiData.players.length === 0 ||
+      apiData.picks.length === 0
+    ) {
+      resultsStatus.textContent =
+        "No players submitted picks for this week.";
+
+      return;
+    }
+
+    if (!apiData.week.resultsComplete) {
+      resultsStatus.textContent =
+        "Picks are locked. Final scores have not been entered.";
+
+      return;
+    }
+
+    const scoringInput =
+      buildLiveWeeklyScoringInput(
+        apiData
+      );
+
+    const calculatedResults =
+      calculateWeeklyResults(
+        scoringInput.completedWeek,
+        scoringInput.playerSubmissions
+      );
+
+    renderWeeklyResults(
+      scoringInput.completedWeek,
+      calculatedResults
+    );
+
+    tableWrapper.hidden = false;
+
+    resultsHelper.hidden =
+      scoringInput.completedWeek
+        .b1gGames.length === 0;
+
+    resultsStatus.textContent =
+      apiData.week.effectiveStatus ===
+        "FINALIZED"
+        ? "Final Results"
+        : "Results Entered";
+  } catch (error) {
+    console.error(
+      "Weekly-results loading failed:",
+      error
+    );
+
+    resultsStatus.textContent =
+      error.message;
+  }
+}
+
+const resultsWeekSelect =
+  document.querySelector(
+    "#results-week-select"
+  );
+
+resultsWeekSelect.addEventListener(
+  "change",
+  function () {
+    loadWeeklyResults(
+      resultsWeekSelect.value
+    );
+  }
 );
+
+loadResultWeeks();
 
 function createSampleSummaryResult(
   playerId,
