@@ -1,63 +1,83 @@
+:root {
+  --nebraska-red: #d00000;
+  --nebraska-dark-red: #a80000;
+  --nebraska-cream: #f5f1e8;
+
+  --page-background: #0e1013;
+  --section-background: #17191d;
+  --input-background: #21242a;
+  --hover-background: #292c32;
+
+  --primary-text: #f5f5f5;
+  --secondary-text: #b8b8b8;
+  --border-color: #45484f;
+
+  --correct-color: #62d783;
+  --incorrect-color: #ff5555;
+}
+
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    color: #222222;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: var(--page-background);
+  color: var(--primary-text);
 }
 
-.site-header{
-    padding: 2rem;
-    background-color: #d00000;
-    color: white;
-    text-align: center;
+.site-header {
+  padding: 2rem;
+  background-color: var(--nebraska-red);
+  color: white;
+  text-align: center;
 }
 
-.site-header h1{
-    margin: 0;
+.site-header h1 {
+  margin: 0;
 }
 
 .site-header p {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 main {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 0 1rem;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
 }
 
 .page-section {
-    padding: 1.5rem;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+  padding: 1.5rem;
+  background-color: var(--section-background);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 35%);
 }
 
 .site-nav {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 1.4rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.4rem;
 }
 
 .nav-button {
-    padding: 0.75rem 1rem;
-    border: 2px solid white;
-    border-radius: 6px;
-    background-color: transparent;
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
+  padding: 0.75rem 1rem;
+  border: 2px solid white;
+  border-radius: 6px;
+  background-color: transparent;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
 .nav-button:hover,
 .nav-button.active {
-    background-color: white;
-    color: #d00000;
+  border-color: var(--nebraska-cream);
+  background-color: var(--nebraska-cream);
+  color: var(--nebraska-dark-red);
 }
 
 [hidden] {
-    display: none;
+  display: none;
 }
 
 .picks-heading {
@@ -66,7 +86,7 @@ main {
 
 .eyebrow {
   margin: 0 0 0.25rem;
-  color: #d00000;
+  color: #ff3b3b;
   font-size: 0.85rem;
   font-weight: bold;
   letter-spacing: 0.05em;
@@ -79,8 +99,8 @@ main {
   gap: 0.35rem;
   margin-top: 1rem;
   padding: 0.75rem 1rem;
-  border-left: 4px solid #d00000;
-  background-color: #f7f7f7;
+  border-left: 4px solid var(--nebraska-red);
+  background-color: var(--input-background);
 }
 
 .deadline-box span {
@@ -93,7 +113,7 @@ main {
 
 .form-section h3 {
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #d00000;
+  border-bottom: 2px solid var(--nebraska-red);
 }
 
 .form-grid,
@@ -116,14 +136,25 @@ main {
 .form-field input,
 .form-field select {
   padding: 0.75rem;
-  border: 1px solid #aaaaaa;
+  border: 1px solid var(--border-color);
   border-radius: 5px;
+  background-color: var(--input-background);
+  color: var(--primary-text);
   font: inherit;
+}
+
+/* Cream week dropdown on the Results page */
+.compact-field select {
+  border-color: var(--nebraska-cream);
+  background-color: var(--nebraska-cream);
+  color: #111111;
+  font-weight: bold;
+  color-scheme: light;
 }
 
 .helper-text,
 .sample-notice {
-  color: #666666;
+  color: var(--secondary-text);
   font-size: 0.9rem;
 }
 
@@ -135,8 +166,9 @@ main {
 .game-card {
   min-width: 0;
   padding: 1rem;
-  border: 1px solid #cccccc;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
+  background-color: var(--section-background);
 }
 
 .game-card legend {
@@ -145,13 +177,13 @@ main {
 }
 
 .nebraska-game {
-  border-color: #d00000;
+  border-color: var(--nebraska-red);
 }
 
 .pick-category + .pick-category {
   margin-top: 1.5rem;
   padding-top: 1rem;
-  border-top: 1px solid #dddddd;
+  border-top: 1px solid var(--border-color);
 }
 
 .pick-category h4 {
@@ -164,13 +196,34 @@ main {
   gap: 0.6rem;
   margin: 0.5rem 0;
   padding: 0.65rem;
-  border: 1px solid #dddddd;
+  border: 1px solid var(--border-color);
   border-radius: 5px;
   cursor: pointer;
 }
 
 .radio-option:hover {
-  background-color: #f7f7f7;
+  background-color: var(--hover-background);
+}
+
+/*
+  This styles secondary buttons such as:
+  Register New Player
+  Load My Saved Picks
+  Create Player
+*/
+button:not(.nav-button):not(.primary-button) {
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--nebraska-cream);
+  border-radius: 5px;
+  background-color: var(--nebraska-cream);
+  color: var(--nebraska-dark-red);
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:not(.nav-button):not(.primary-button):hover {
+  background-color: #fffaf0;
 }
 
 .primary-button {
@@ -179,7 +232,7 @@ main {
   padding: 0.9rem 1rem;
   border: 0;
   border-radius: 6px;
-  background-color: #d00000;
+  background-color: var(--nebraska-red);
   color: white;
   font-size: 1rem;
   font-weight: bold;
@@ -187,28 +240,26 @@ main {
 }
 
 .primary-button:hover {
-  background-color: #a80000;
+  background-color: var(--nebraska-dark-red);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--nebraska-cream);
+  outline-offset: 2px;
 }
 
 .form-message {
   min-height: 1.5rem;
   font-weight: bold;
   text-align: center;
-}
-
-@media (max-width: 600px) {
-  .form-grid,
-  .score-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .site-header {
-    padding: 1.5rem 1rem;
-  }
-
-  .nav-button {
-    padding: 0.65rem 0.75rem;
-  }
 }
 
 .section-heading {
@@ -230,9 +281,10 @@ main {
   display: inline-block;
   margin: 0 0 1rem;
   padding: 0.4rem 0.7rem;
+  border: 1px solid #2e8b4d;
   border-radius: 999px;
-  background-color: #e6f4ea;
-  color: #176b35;
+  background-color: #163522;
+  color: var(--correct-color);
   font-size: 0.85rem;
   font-weight: bold;
 }
@@ -250,17 +302,19 @@ main {
 .results-table th,
 .results-table td {
   padding: 0.8rem;
-  border-bottom: 1px solid #dddddd;
+  border-bottom: 1px solid var(--border-color);
   text-align: left;
   vertical-align: top;
 }
 
+/* Cream table header with black text */
 .results-table th {
-  background-color: #f4f4f4;
+  background-color: var(--nebraska-cream);
+  color: #111111;
 }
 
 .results-table tbody tr:hover {
-  background-color: #fafafa;
+  background-color: var(--hover-background);
 }
 
 .pick-value {
@@ -277,24 +331,24 @@ main {
 }
 
 .result-correct {
-  color: #176b35;
+  color: var(--correct-color);
 }
 
 .result-incorrect {
-  color: #a80000;
+  color: var(--incorrect-color);
 }
 
 .result-neutral {
-  color: #666666;
+  color: var(--secondary-text);
 }
 
 .score-teams {
-  color: #666666;
+  color: var(--secondary-text);
   font-size: 0.75rem;
 }
 
 .b1g-details summary {
-  color: #d00000;
+  color: #ff3b3b;
   font-weight: bold;
   cursor: pointer;
 }
@@ -311,19 +365,9 @@ main {
 }
 
 .total-points {
-  color: #d00000;
+  color: #ff3b3b;
   font-size: 1.1rem;
   font-weight: bold;
-}
-
-@media (max-width: 600px) {
-  .section-heading {
-    flex-direction: column;
-  }
-
-  .compact-field {
-    width: 100%;
-  }
 }
 
 .leaderboard-table td:first-child {
@@ -337,7 +381,30 @@ main {
 }
 
 .leaderboard-points {
-  color: #d00000;
+  color: #ff3b3b;
   font-size: 1.1rem;
   font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  .form-grid,
+  .score-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .site-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .nav-button {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .section-heading {
+    flex-direction: column;
+  }
+
+  .compact-field {
+    width: 100%;
+  }
 }
