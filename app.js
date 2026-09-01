@@ -414,10 +414,10 @@ picksForm.addEventListener(
         );
       }
 
-      console.log(
-        "Saved pick submission:",
-        payload.data
-      );
+      // console.log(
+      //   "Saved pick submission:",
+      //   payload.data
+      // );
 
       formMessage.textContent =
         "All picks saved successfully.";
@@ -850,10 +850,10 @@ async function loadResultWeeks() {
     resultsStatus.textContent =
       "Select a week to view its results.";
 
-    console.log(
-      "Loaded available result weeks:",
-      resultWeeks
-    );
+    // console.log(
+    //   "Loaded available result weeks:",
+    //   resultWeeks
+    // );
   } catch (error) {
     console.error(
       "Result-week loading failed:",
@@ -1226,7 +1226,7 @@ const sampleLeaderboard = calculateLeaderboard(
   sampleFinalizedWeeks
 );
 
-console.table(sampleLeaderboard);
+//console.table(sampleLeaderboard);
 
 console.assert(
   sampleLeaderboard[0].playerId === "P001",
@@ -1473,10 +1473,10 @@ async function loadLeaderboard() {
 
     tableWrapper.hidden = false;
 
-    console.log(
-      "Loaded live leaderboard:",
-      standings
-    );
+    // console.log(
+    //   "Loaded live leaderboard:",
+    //   standings
+    // );
   } catch (error) {
     console.error(
       "Leaderboard loading failed:",
@@ -1490,7 +1490,7 @@ async function loadLeaderboard() {
 
 loadLeaderboard();
 
-console.table(
+/*console.table(
   sampleWeeklyResults.map(function (result) {
     return {
       player: result.playerName,
@@ -1506,7 +1506,7 @@ console.table(
       weeklyPoints: result.weeklyPoints
     };
   })
-);
+);*/
 
 function normalizePickFormData(apiData) {
   return {
@@ -1602,10 +1602,10 @@ async function loadPickForm(weekId = null) {
       currentPickWeek.effectiveStatus
     );
 
-    console.log(
-      "Loaded live pick-form data:",
-      currentPickWeek
-    );
+    // console.log(
+    //   "Loaded live pick-form data:",
+    //   currentPickWeek
+    // );
   } catch (error) {
     console.error("Pick form loading failed:", error);
 
@@ -1772,10 +1772,10 @@ registrationForm.addEventListener(
       registrationMessage.textContent =
         `Registration successful. Your Player ID is ${newPlayer.playerId}.`;
 
-      console.log(
-        "Registered player:",
-        newPlayer
-      );
+      // console.log(
+      //   "Registered player:",
+      //   newPlayer
+      // );
     } catch (error) {
       console.error(
         "Player registration failed:",
@@ -2032,10 +2032,10 @@ async function loadPlayers() {
       playerSelect.disabled = false;
     }
 
-    console.log(
-      "Loaded active players:",
-      players
-    );
+    // console.log(
+    //   "Loaded active players:",
+    //   players
+    // );
   } catch (error) {
     console.error(
       "Player loading failed:",
